@@ -8,15 +8,20 @@ someBlock.setTitle('Some Block');
 someBlock.setType('someblock');
 
 // Set any attributes
-//someBlock.setAttribute('pastable');
-//someBlock.setAttribute('droppable');
-someBlock.setAttribute('formattable');
+someBlock.setAttribute('pastable');
+someBlock.setAttribute('droppable');
+//someBlock.setAttribute('formattable');
+
+// Set a custom paste callback
+someBlock.setPasteCallback(function(event, st) {
+  st.$editor.find('[name="' + event.target.name + '"]').hide().after('<a href="' + event.target.value + '" style="display: block;">Visit link</a>');
+});
 
 // Set the icon
 someBlock.setIcon('text');
 
 // Add some components
-someBlock.setComponent('url', {
+someBlock.setPastableComponent('url', {
   label: 'URL',
   type: 'text',
   placeholder: 'Enter your URL here',
