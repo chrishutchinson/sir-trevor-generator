@@ -18,6 +18,10 @@ var SirTrevorBlock = {
   pasteTarget: false,
   addedComponents: false,
 
+  // Default blank paste callback
+  pasteCallback: function(event, st) {},
+
+  // Creates an element using jQuery
   createElement: function(name, component, value) {
     switch(component.type) {
       case 'text':
@@ -61,14 +65,17 @@ var SirTrevorBlock = {
     return $element;
   },
 
+  // Sets the title
   setTitle: function(title) {
     this.title = title;
   },
 
+  // Sets the icon
   setIcon: function(icon) {
     this.icon = icon;
   },
 
+  // Creates a pastable component
   setPastableComponent: function(name, component) {
     this.components[name] = component;
     this.attributes.pastable = {
@@ -82,16 +89,19 @@ var SirTrevorBlock = {
     this.setHTML('paste', $element[0].outerHTML);
   },
 
+  // Creates a regular component
   setComponent: function(name, component) {
     this.components[name] = component;
   },
 
+  // Creates a list of components
   setComponents: function(components) {
     $.each(this.components, function(i, e) {
       this.components[i] = e;
     });
   },
 
+  // Sets an attribute on the block
   setAttribute: function(attribute, target) {
     this.attributes[attribute] = {
       pasteTarget: (target ? target : false),
@@ -102,10 +112,12 @@ var SirTrevorBlock = {
     }
   },
 
+  // Set the type for the block
   setType: function(type) {
     this.type = type;
   },
 
+  // Set HTML for each attribute
   setHTML: function(type, html) {
     switch(type) {
       case 'drop':
@@ -117,14 +129,12 @@ var SirTrevorBlock = {
     }
   },
 
-  pasteCallback: function(event, st) {
-
-  },
-
+  // Set the paste callback
   setPasteCallback: function(callback) {
     this.pasteCallback = callback;
   },
 
+  // Build the block
   buildBlock: function() {
     var that = this;
 
