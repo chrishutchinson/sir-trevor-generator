@@ -19,7 +19,6 @@ var SirTrevorBlock = {
   addedComponents: false,
 
   createElement: function(name, component, value) {
-    console.log(name, component, value);
     switch(component.type) {
       case 'text':
         var $element = $('<input>', {
@@ -27,7 +26,7 @@ var SirTrevorBlock = {
           name: name,
           placeholder: component.placeholder,
           value: (value ? value : component.default),
-          class: component.class
+          class: component.class,
         });
         break;
       case 'number':
@@ -49,6 +48,14 @@ var SirTrevorBlock = {
           name: name
         }).html((value ? value : component.default));
         break;
+    }
+
+    if(!_.isUndefined(component.callbacks)) {
+      $.each(component.callbacks, function(eventName, callback) {
+        $element.on(eventName, function(e) {
+          callback(e, SirTrevor.getInstance());
+        });
+      });
     }
 
     return $element;
@@ -169,6 +176,10 @@ var SirTrevorBlock = {
 
         if(data[that.pasteTarget] !== '') {
           $.each(components, function(i, e) {
+            var $elementWrapper = $('<div>', {
+              class: 'st-element',
+              style: 'margin-bottom: 10px;'
+            });
             var $elementLabel = $('<label>').html(e.label);
             var $element = that.createElement(i, e, data[i]);
 
@@ -177,7 +188,8 @@ var SirTrevorBlock = {
               st._initTextBlocks();
             }
 
-            st.$editor.append($elementLabel).append($element);
+            $elementWrapper.append($elementLabel).append($element)
+            st.$editor.append($elementWrapper);
           });
         }
       },

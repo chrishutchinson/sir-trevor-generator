@@ -9,7 +9,7 @@ someBlock.setType('someblock');
 
 // Set any attributes
 someBlock.setAttribute('pastable');
-someBlock.setAttribute('droppable');
+//someBlock.setAttribute('droppable');
 //someBlock.setAttribute('formattable');
 
 // Set a custom paste callback
@@ -25,7 +25,7 @@ someBlock.setPastableComponent('url', {
   label: 'URL',
   type: 'text',
   placeholder: 'Enter your URL here',
-  default: null,
+  default: null
 });
 someBlock.setComponent('size', {
   label: 'Size',
@@ -35,6 +35,14 @@ someBlock.setComponent('size', {
   max: 10,
   step: 0.1,
   default: 5.5,
+  callbacks: {
+    keyup: function(e, st) {
+      console.log('keyup', e, st);
+    },
+    click: function(e, st) {
+      console.log('clicky', e, st);
+    }
+  }
 });
 someBlock.setComponent('textarea', {
   label: 'Text!',
