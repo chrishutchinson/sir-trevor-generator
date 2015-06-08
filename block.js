@@ -17,6 +17,9 @@ var SirTrevorBlock = {
   },
   pasteTarget: false,
   addedComponents: false,
+  hasPastable: false,
+  hasTextarea: false,
+  isRendered: false,
 
   // Default blank paste callback
   pasteCallback: function(event, st) {},
@@ -51,6 +54,12 @@ var SirTrevorBlock = {
           class: 'st-required st-text-block st-formattable',
           name: name
         }).html((value ? value : component.default));
+
+        if(this.hasTextarea) {
+          console.error('Sir Trevor Block Generator: We are only able to add one formattable textarea at the moment. The "' + name + '"  component will not be formattable.');
+        }
+
+        this.hasTextarea = true;
         break;
     }
 
@@ -76,17 +85,24 @@ var SirTrevorBlock = {
   },
 
   // Creates a pastable component
-  setPastableComponent: function(name, component) {
-    this.components[name] = component;
-    this.attributes.pastable = {
-      pasteTarget: name,
-    };
-    this.pasteTarget = name;
+  setPastableComponent: function(name, component, callback) {
+    if(!this.hasPastable) {
+      this.hasPastable = true;
+      this.components[name] = component;
+      this.attributes.pastable = {
+        pasteTarget: name,
+      };
+      this.pasteTarget = name;
 
-    component.class = 'st-block__paste-input st-paste-block';
-    var $element = this.createElement(name, component);
+      component.class = 'st-block__paste-input st-paste-block';
+      var $element = this.createElement(name, component);
 
-    this.setHTML('paste', $element[0].outerHTML);
+      this.setHTML('paste', $element[0].outerHTML);
+
+      this.setPasteCallback(callback);
+    } else {
+      console.error('Sir Trevor Block Generator: This block already has a pastable element. The "' + name + '" component has been ignored.');
+    }
   },
 
   // Creates a regular component
@@ -202,6 +218,8 @@ var SirTrevorBlock = {
             st.$editor.append($elementWrapper);
           });
         }
+
+        that.isRendered = true;
       },
 
       onBlockRender: function() {
@@ -220,6 +238,31 @@ var SirTrevorBlock = {
           this.pasteCallback(event, this);
         }
       },  
+
+      _serializeData: function() {
+        if(that.isRendered) {
+          var st = this;
+
+          var data = {},
+              text = null;
+
+          $.each(that.components, function(i, e) {
+            switch(e.type) {
+              case 'textarea':
+                data[i] = st.$('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+                if (data[i].length > 0 && st.options.convertToMarkdown) {
+                  data[i] = stToMarkdown(data[i], e.type);
+                }
+                break;
+              default:
+                data[i] = st.$('input[name="' + i + '"]').val();
+                break;
+            }
+          });
+
+          return data;
+        }
+      },
     }));
 
     return this.block;

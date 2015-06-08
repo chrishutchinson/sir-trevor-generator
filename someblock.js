@@ -12,21 +12,24 @@ someBlock.setAttribute('pastable');
 //someBlock.setAttribute('droppable');
 //someBlock.setAttribute('formattable');
 
-// Set a custom paste callback
-someBlock.setPasteCallback(function(event, st) {
-  st.$editor.find('[name="' + event.target.name + '"]').hide().after('<a href="' + event.target.value + '" style="display: block;">Visit link</a>');
-});
-
 // Set the icon
 someBlock.setIcon('text');
 
 // Add some components
-someBlock.setPastableComponent('url', {
-  label: 'URL',
+someBlock.setPastableComponent('video', {
+  label: 'YouTube Video',
   type: 'text',
-  placeholder: 'Enter your URL here',
+  placeholder: 'Enter your YouTube URL here',
   default: null
+}, function(event, st) {
+  var $anchor = $('<a>', {
+    href: event.target.value,
+    style: 'display: block;',
+  });
+  st.$editor.find('[name="' + event.target.name + '"]').hide().after($anchor);
+  $anchor.oembed();
 });
+
 someBlock.setComponent('size', {
   label: 'Size',
   type: 'number',
@@ -44,10 +47,12 @@ someBlock.setComponent('size', {
     }
   }
 });
+
 someBlock.setComponent('textarea', {
   label: 'Text!',
   type: 'textarea',
 });
+
 someBlock.setComponent('textarea2', {
   label: 'Text 2!',
   type: 'textarea',
