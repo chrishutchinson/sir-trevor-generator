@@ -4,6 +4,13 @@
 
 An early, *early* pass at building a simple Sir Trevor JS block builder
 
+## Installation
+
+Install via Bower by running:
+	bower install sir-trevor-generator --save
+
+Include `block.js` into your project to be able to create blocks using this library.
+
 ### Currently supported fields
 
 - Text
