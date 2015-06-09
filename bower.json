@@ -1,0 +1,27 @@
+{
+  "name": "Sir Trevor JS Generator",
+  "version": "0.0.1",
+  "homepage": "https://github.com/chrishutchinson/sir-trevor-generator",
+  "authors": [
+    "Chris Hutchinson <hello@chrishutchinson.me>"
+  ],
+  "description": "A simple API for generating Sir Trevor JS blocks with multiple fields and components",
+  "main": "block.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "sir",
+    "trevor",
+    "js",
+    "blocks"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
