@@ -45,7 +45,6 @@ var SirTrevorBlock = function(title, type) {
   this.hasPastable = false;
   this.hasUploadable = false;
   this.hasTextarea = false;
-  this.isRendered = false;
 
   /**
    * Creates an element using jQuery
@@ -70,10 +69,10 @@ var SirTrevorBlock = function(title, type) {
         if(typeof value.url !== 'undefined') {
           // Create our image tag
           var $element = $('<div>');
-          var $elementImage = $('<img>', {
-            src: value.url,
+          var $elementImage = $('<a>', {
+            href: value.url,
             style: 'max-width: 100%; display: block;'
-          });
+          }).html('View Media');
           var $elementInput = $('<input>', {
             value: value.url,
             type: 'hidden',
@@ -375,6 +374,9 @@ SirTrevorBlock.prototype.buildBlock = function() {
     controls: {}
   };
 
+  // Some booleans
+  this.isRendered = false;
+
   // Attributes
   if(that.attributes.pastable) {
     this.defaults.pastable = true;
@@ -453,11 +455,13 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
       st.$editor.show();
 
-      that.isRendered = true;
+      this.isRendered = true;
     },
 
     // Renders the block
     onBlockRender: function() {
+      this.isRendered = false;
+
       if(this.uploadable) {
         /* Setup the upload button */
         this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
@@ -490,8 +494,33 @@ SirTrevorBlock.prototype.buildBlock = function() {
       var file = transferData.files[0],
           urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
 
-      // Handle one upload at a time
+      // Handle images
       if (/image/.test(file.type)) {
+        this.loading();
+        // Show this image on here
+        this.$inputs.hide();
+
+        var dataObj = {};
+        dataObj[transferData.name] = {
+          url: urlAPI.createObjectURL(file)
+        };
+
+        this.uploader(
+          file,
+          function(data) {
+            this.setData(data);
+            this.loadData(data);
+            this.ready();
+          },
+          function(error){
+            this.addMessage(i18n.t('blocks:image:upload_error'));
+            this.ready();
+          }
+        );
+      }
+
+      // Handle Videos
+      if (/video/.test(file.type)) {
         this.loading();
         // Show this image on here
         this.$inputs.hide();
@@ -529,7 +558,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
         $.each(that.components, function(i, e) {
           switch(e.type) {
             case 'textarea':
-              data[i] = st.$('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+              data[i] = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
               if (data[i].length > 0 && st.options.convertToMarkdown) {
                 data[i] = stToMarkdown(data[i], e.type);
               }
