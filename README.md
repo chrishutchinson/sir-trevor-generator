@@ -8,8 +8,18 @@ An early, *early* pass at building a simple Sir Trevor JS block builder
 
 - Text
 - Textarea
-- Number
+- Number 
+- Files (uploadable)
+
+### Callbacks
+
+Most fields also support custom callbacks such as the following:
+- On paste
+- On click
+- On keyup
+
+You can define your own callback functions to allow these fields to interact with Sir Trevor JS.
 
 ### Example
 
-See `someblock.js` as an example, although, it's not been tested at present.
+See `someblock.js` and `oembed.js` as examples, although, they've not been thoroughly tested at present.

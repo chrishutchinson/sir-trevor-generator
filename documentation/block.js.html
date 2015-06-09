@@ -34,7 +34,9 @@
 
 
 /**
- * @namespace
+ * @class
+ * @param {string} title                  - The title of our block
+ * @param {string} type                   - The type of our block
  * @property {string}  type               - The block type
  * @property {string}  title              - The block title
  * @property {object}  attributes         - The attributes set on the block
@@ -52,81 +54,26 @@
  * @property {boolean}  hasUplodable      - Has this block got an uplodable component?
  * @property {boolean}  isRendered        - Is this block fully rendered?
  */
+var SirTrevorBlock = function(title, type) {
+  this.title = title;
+  this.type = type;
 
-var SirTrevorBlock = {
-  type: null,
-  title: null,
-  attributes: {},
-  properties: {},
-  components: {},
-  controllable: false,
-  icon: 'default',
-  html: {
+  this.attributes = {};
+  this.properties = {};
+  this.components = {};
+  this.controllable = false;
+  this.icon = 'default';
+  this.html = {
     drop: false,
     paste: false,
     upload: false,
-  },
-  pasteTarget: false,
-  uploadTarget: false,
-  hasPastable: false,
-  hasUploadable: false,
-  hasTextarea: false,
-  isRendered: false,
-
-  /**
-   * Default blank paste callback
-   * @function
-   * @param {object} event    - The event which triggered this callback.
-   * @param {object} st       - The Sir Trevor JS instance.
-   */
-  pasteCallback: function(event, st) {},
-
-  /**
-   * The callback used when an item is uploaded via Sir Trevor JS.
-   *
-   * @callback uploadCallback
-   * @param {object} event - The event that triggered the callback
-   * @param {object} st - The instance of Sir Trevor
-   */
-  uploadCallback: function(event, st) {},
-
-  /**
-   * Set HTML for each attribute
-   * @function
-   * @param {string} type         - The property to set the HTML to
-   * @param {string} html         - The HTML to set
-   */
-   setHTML: function(type, html) {
-    switch(type) {
-      case 'drop':
-        this.html.drop = html;
-        break;
-      case 'paste':
-        this.html.paste = html;
-        break;
-      case 'upload':
-        this.html.upload = html;
-        break;
-    }
-  },
-
-  /**
-   * Set the paste callback
-   * @function
-   * @param {pasteCallback} callback         - The callback to run when an item is pasted into the block's pasteTarget
-   */
-  setPasteCallback: function(callback) {
-    this.pasteCallback = callback;
-  },
-
-  /**
-   * Set the upload callback
-   * @function
-   * @param {uploadCallback} callback         - The callback to run when an item is upload into the block's upload field
-   */
-  setUploadCallback: function(callback) {
-    this.uploadCallback = callback;
-  },
+  };
+  this.pasteTarget = false;
+  this.uploadTarget = false;
+  this.hasPastable = false;
+  this.hasUploadable = false;
+  this.hasTextarea = false;
+  this.isRendered = false;
 
   /**
    * Creates an element using jQuery
@@ -136,7 +83,7 @@ var SirTrevorBlock = {
    * @param {string} value        - The value of this component
    * @param {object} st           - The Sir Trevor JS instance.
    */
-  createElement: function(name, component, value, st) {
+  this.createElement = function(name, component, value, st) {
     switch(component.type) {
       case 'text':
         var $element = $('&lt;input>', {
@@ -205,359 +152,428 @@ var SirTrevorBlock = {
     }
 
     return $element;
-  },
+  };
 
   /**
-   * Sets the title
+   * Default blank paste callback
    * @function
-   * @param {string} title        - The title of our block
-   * @returns {object} this       - The instance on which this method was called.
+   * @param {object} event    - The event which triggered this callback.
+   * @param {object} st       - The Sir Trevor JS instance.
    */
-  setTitle: function(title) {
-    this.title = title;
-
-    return this;
-  },
+  this.pasteCallback = function(event, st) {};
 
   /**
-   * Sets the icon
-   * @function
-   * @param {string} icon        - The icon of our block
-   * @returns {object} this       - The instance on which this method was called.
+   * The callback used when an item is uploaded via Sir Trevor JS.
+   *
+   * @callback uploadCallback
+   * @param {object} event    - The event that triggered the callback
+   * @param {object} st       - The instance of Sir Trevor
    */
-  setIcon: function(icon) {
-    this.icon = icon;
+  this.uploadCallback = function(event, st) {};
+}
 
-    return this;
-  },
+/**
+ * Set the paste callback
+ * @function
+ * @memberof SirTrevorBlock
+ * @param {pasteCallback} callback         - The callback to run when an item is pasted into the block's pasteTarget
+ */
+SirTrevorBlock.prototype.setPasteCallback = function(callback) {
+  this.pasteCallback = callback;
+};
 
-  /**
-   * Creates a pastable component
-   * @function
-   * @param {string} name         - The name of our component
-   * @param {object} component    - The component configuration
-   * @param {function} callback   - The callback to run on paste
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setPastableComponent: function(name, component, callback) {
-    if(!this.hasPastable) {
-      this.hasPastable = true;
-      this.components[name] = component;
-      this.attributes.pastable = {
-        pasteTarget: name,
-      };
-      this.pasteTarget = name;
+/**
+ * Set the upload callback
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {uploadCallback} callback         - The callback to run when an item is upload into the block's upload field
+ */
+SirTrevorBlock.prototype.setUploadCallback = function(callback) {
+  this.uploadCallback = callback;
+};
 
-      component.class = 'st-block__paste-input st-paste-block';
-      var $element = this.createElement(name, component);
+/**
+ * Set HTML for each attribute
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} type         - The property to set the HTML to
+ * @param {string} html         - The HTML to set
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setHTML = function(type, html) {
+  switch(type) {
+    case 'drop':
+      this.html.drop = html;
+      break;
+    case 'paste':
+      this.html.paste = html;
+      break;
+    case 'upload':
+      this.html.upload = html;
+      break;
+  }
 
-      this.setHTML('paste', $element[0].outerHTML);
+  return this;
+};
 
-      this.setPasteCallback(callback);
-    } else {
-      console.error('Sir Trevor Block Generator: This block already has a pastable element. The "' + name + '" component has been ignored.');
-    }
+/**
+ * Sets the icon
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} icon        - The icon of our block
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setIcon = function(icon) {
+  this.icon = icon;
+  return this;
+};
 
-    return this;
-  },
+/**
+ * Sets the title
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} title        - The title of our block
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setTitle = function(title) {
+  this.title = title;
+  return this;
+};
 
-  /**
-   * Creates an uploadable component
-   * @function
-   * @param {string} name         - The name of our component
-   * @param {object} component    - The component configuration
-   * @param {uploadCallback} callback   - The callback to run on upload
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setUploadableComponent: function(name, component, callback) {
-    if(!this.hasUplodable) {
-      this.hasUplodable = true;
-      this.components[name] = component;
-      this.components[name].type = 'file';
-
-      this.attributes.uploadable = {
-        uploadTarget: name,
-      };
-      this.uploadTarget = name;
-
-      var uploadHTML = [
-        '&lt;div class="st-block__upload-container">',
-          '&lt;input type="file" name="' + name + '" class="st-file-upload">',
-          '&lt;button class="st-upload-btn">&lt;%= i18n.t("general:upload") %>&lt;/button>',
-        '&lt;/div>'
-      ].join('\n');
-      this.setHTML('upload', uploadHTML);
-
-      this.setUploadCallback(callback);
-    } else {
-      console.error('Sir Trevor Block Generator: This block already has a uploadable element. The "' + name + '" component has been ignored.');
-    }
-
-    return this;
-  },
-
-  /**
-   * Creates a regular component
-   * @function
-   * @param {string} name         - The name of our component
-   * @param {object} component    - The component configuration
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setComponent: function(name, component) {
+/**
+ * Creates a pastable component
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} name         - The name of our component
+ * @param {object} component    - The component configuration
+ * @param {function} callback   - The callback to run on paste
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setPastableComponent = function(name, component, callback) {
+  if(!this.hasPastable) {
+    this.hasPastable = true;
     this.components[name] = component;
-
-    return this;
-  },
-
-  /**
-   * Creates regular components from a list
-   * @function
-   * @param {object} components    - An object of components and their configurations
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setComponents: function(components) {
-    $.each(this.components, function(i, e) {
-      this.components[i] = e;
-    });
-
-    return this;
-  },
-
-  /**
-   * Sets an attribute on the block
-   * @function
-   * @param {string} attribute         - The name of the attribute you wish to set
-   * @param {string} target            - The target for this attribute
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setAttribute: function(attribute, target) {
-    this.attributes[attribute] = {
-      pasteTarget: (target ? target : false),
+    this.attributes.pastable = {
+      pasteTarget: name,
     };
+    this.pasteTarget = name;
 
-    if(target) {
-      this.pasteTarget = target;
-    }
+    component.class = 'st-block__paste-input st-paste-block';
+    var $element = this.createElement(name, component);
 
-    return this;
-  },
+    this.setHTML('paste', $element[0].outerHTML);
 
-  /**
-   * Sets a property on the block
-   * @function
-   * @param {string} property         - The name of the property you wish to set
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setProperty: function(property) {
-    this.controllable = true;
+    this.setPasteCallback(callback);
+  } else {
+    console.error('Sir Trevor Block Generator: This block already has a pastable element. The "' + name + '" component has been ignored.');
+  }
 
-    this.properties[property] = true;
+  return this;
+};
 
-    return this;
-  },
+/**
+ * Creates an uploadable component
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} name         - The name of our component
+ * @param {object} component    - The component configuration
+ * @param {uploadCallback} callback   - The callback to run on upload
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setUploadableComponent = function(name, component, callback) {
+  if(!this.hasUplodable) {
+    this.hasUplodable = true;
+    this.components[name] = component;
+    this.components[name].type = 'file';
 
-  /**
-   * Set the type for the block
-   * @function
-   * @param {string} type         - The type you want to set for the block
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  setType: function(type) {
-    this.type = type;
-
-    return this;
-  },
-
-  /**
-   * Generates the required block code for use in your Sir Trevor based on your block config
-   * @function
-   * @returns {object} this       - The instance on which this method was called.
-   */
-  buildBlock: function() {
-    var that = this;
-
-    // Default config
-    this.defaults = {
-      type: this.type,
-      title: this.title,
-      icon_name: this.icon,
-      properties: this.properties,
-      controllable: this.controllable,
-      controls: {}
+    this.attributes.uploadable = {
+      uploadTarget: name,
     };
+    this.uploadTarget = name;
 
-    // Attributes
-    if(that.attributes.pastable) {
-      this.defaults.pastable = true;
-      this.defaults.pasteCallback = that.pasteCallback;
-    }
-    if(that.attributes.droppable) {
-      this.defaults.droppable = true;
-    }
-    if(that.attributes.formattable) {
-      this.defaults.formattable = true;
-    }
-    if(that.attributes.uploadable) {
-      this.defaults.uploadable = true;
-    }
+    var uploadHTML = [
+      '&lt;div class="st-block__upload-container">',
+        '&lt;input type="file" name="' + name + '" class="st-file-upload">',
+        '&lt;button class="st-upload-btn">&lt;%= i18n.t("general:upload") %>&lt;/button>',
+      '&lt;/div>'
+    ].join('\n');
+    this.setHTML('upload', uploadHTML);
 
-    // Properties
-    if(this.properties.minimisable) {
-      this.defaults.controls.minimise = function(event) {
-        this.$el.toggleClass('st-block__minimised');
-      };
-    }
+    this.setUploadCallback(callback);
+  } else {
+    console.error('Sir Trevor Block Generator: This block already has a uploadable element. The "' + name + '" component has been ignored.');
+  }
 
-    // HTML
-    if(that.html.paste) {
-      this.defaults.paste_options = {
-        html: that.html.paste, 
-      };
-    }
-    if(that.html.upload) {
-      this.defaults.upload_options = {
-        html: that.html.upload, 
-      };
-    }
+  return this;
+};
 
-    // Block data
-    this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
+/**
+ * Creates a regular component
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} name         - The name of our component
+ * @param {object} component    - The component configuration
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setComponent = function(name, component) {
+  this.components[name] = component;
 
-      // Sets the initial HTML
-      editorHTML: '&lt;div>&lt;h2>' + this.title + '&lt;/h2>&lt;hr />&lt;/div>',
-      
-      // Loads data
-      loadData: function(data) {
+  return this;
+};
+
+/**
+ * Creates regular components from a list
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {object} components    - An object of components and their configurations
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setComponents = function(components) {
+  $.each(this.components, function(i, e) {
+    this.components[i] = e;
+  });
+
+  return this;
+};
+
+/**
+ * Sets an attribute on the block
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} attribute         - The name of the attribute you wish to set
+ * @param {string} target            - The target for this attribute
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setAttribute = function(attribute, target) {
+  this.attributes[attribute] = {
+    pasteTarget: (target ? target : false),
+  };
+
+  if(target) {
+    this.pasteTarget = target;
+  }
+
+  return this;
+};
+
+/**
+ * Sets a property on the block
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} property         - The name of the property you wish to set
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setProperty = function(property) {
+  this.controllable = true;
+
+  this.properties[property] = true;
+
+  return this;
+};
+
+/**
+ * Set the type for the block
+ * @memberof SirTrevorBlock
+ * @function
+ * @param {string} type         - The type you want to set for the block
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.setType = function(type) {
+  this.type = type;
+
+  return this;
+};
+
+/**
+ * Generates the required block code for use in your Sir Trevor based on your block config
+ * @memberof SirTrevorBlock
+ * @function
+ * @returns {object} this       - The instance on which this method was called.
+ */
+SirTrevorBlock.prototype.buildBlock = function() {
+  var that = this;
+
+  // Default config
+  this.defaults = {
+    type: this.type,
+    title: this.title,
+    icon_name: this.icon,
+    properties: this.properties,
+    controllable: this.controllable,
+    controls: {}
+  };
+
+  // Attributes
+  if(that.attributes.pastable) {
+    this.defaults.pastable = true;
+    this.defaults.pasteCallback = that.pasteCallback;
+  }
+  if(that.attributes.droppable) {
+    this.defaults.droppable = true;
+  }
+  if(that.attributes.formattable) {
+    this.defaults.formattable = true;
+  }
+  if(that.attributes.uploadable) {
+    this.defaults.uploadable = true;
+  }
+
+  // Properties
+  if(this.properties.minimisable) {
+    this.defaults.controls.minimise = function(event) {
+      this.$el.toggleClass('st-block__minimised');
+    };
+  }
+
+  // HTML
+  if(that.html.paste) {
+    this.defaults.paste_options = {
+      html: that.html.paste, 
+    };
+  }
+  if(that.html.upload) {
+    this.defaults.upload_options = {
+      html: that.html.upload, 
+    };
+  }
+
+  // Block data
+  this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
+
+    // Sets the initial HTML
+    editorHTML: '&lt;div>&lt;h2>' + this.title + '&lt;/h2>&lt;hr />&lt;/div>',
+    
+    // Loads data
+    loadData: function(data) {
+      var st = this;
+
+      if (typeof data === 'undefined') { data = {}; }
+
+      $.each(that.components, function(i, e) {
+        if(typeof data[i] === 'undefined') { data[i] = ''; }
+      });
+
+      this.addComponents(data, that.components);
+    },
+
+    // Adds components
+    addComponents: function(data, components) {
+      var st = this;
+
+      //if(data[that.pasteTarget] !== '') {
+        $.each(components, function(i, e) {
+          var $elementWrapper = $('&lt;div>', {
+            class: 'st-element',
+            style: 'margin-bottom: 10px;'
+          });
+          var $elementLabel = $('&lt;label>').html(e.label);
+          var $element = that.createElement(i, e, data[i], st);
+
+          if(e.type === 'textarea') {
+            st.text_block = $element;
+            st._initTextBlocks();
+          }
+
+          $elementWrapper.append($elementLabel).append($element);
+          st.$editor.append($elementWrapper);
+        });
+      //}
+
+      st.$editor.show();
+
+      that.isRendered = true;
+    },
+
+    // Renders the block
+    onBlockRender: function() {
+      if(this.uploadable) {
+        /* Setup the upload button */
+        this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
+        this.$inputs.find('input').on('change', _.bind(function(ev){
+          this.onDrop(ev.currentTarget);
+        }, this));
+
+        this.$editor.show();
+      } else {
+        if(this.$editor[0].children.length == 0){
+          this.loadData();
+        } 
+      }
+    },
+
+    // Handles pasted content
+    onContentPasted: function(event) {
+      if(that.pasteTarget) {
+        var setDataConfig = {};
+        setDataConfig[that.pasteTarget] = event.target.value; 
+        
+        this.setAndLoadData(setDataConfig);
+
+        this.pasteCallback(event, this);
+      }
+    }, 
+
+    // Handle file drops
+    onDrop: function(transferData){
+      var file = transferData.files[0],
+          urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
+
+      // Handle one upload at a time
+      if (/image/.test(file.type)) {
+        this.loading();
+        // Show this image on here
+        this.$inputs.hide();
+
+        var dataObj = {};
+        dataObj[transferData.name] = {
+          url: urlAPI.createObjectURL(file)
+        };
+
+        this.uploader(
+          file,
+          function(data) {
+            this.setData(data);
+            this.loadData(data);
+            this.ready();
+          },
+          function(error){
+            this.addMessage(i18n.t('blocks:image:upload_error'));
+            this.ready();
+          }
+        );
+      }
+
+      that.uploadCallback(event, this);
+    },
+
+    // Handles the output to JSON object
+    _serializeData: function() {
+      if(that.isRendered) {
         var st = this;
 
-        if (typeof data === 'undefined') { data = {}; }
+        var data = {},
+            text = null;
 
         $.each(that.components, function(i, e) {
-          if(typeof data[i] === 'undefined') { data[i] = ''; }
+          switch(e.type) {
+            case 'textarea':
+              data[i] = st.$('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+              if (data[i].length > 0 &amp;&amp; st.options.convertToMarkdown) {
+                data[i] = stToMarkdown(data[i], e.type);
+              }
+              break;
+            default:
+              data[i] = st.$('input[name="' + i + '"]').val();
+              break;
+          }
         });
 
-        this.addComponents(data, that.components);
-      },
+        return data;
+      }
+    },
+  }));
 
-      // Adds components
-      addComponents: function(data, components) {
-        var st = this;
-
-        //if(data[that.pasteTarget] !== '') {
-          $.each(components, function(i, e) {
-            var $elementWrapper = $('&lt;div>', {
-              class: 'st-element',
-              style: 'margin-bottom: 10px;'
-            });
-            var $elementLabel = $('&lt;label>').html(e.label);
-            var $element = that.createElement(i, e, data[i], st);
-
-            if(e.type === 'textarea') {
-              st.text_block = $element;
-              st._initTextBlocks();
-            }
-
-            $elementWrapper.append($elementLabel).append($element);
-            st.$editor.append($elementWrapper);
-          });
-        //}
-
-        st.$editor.show();
-
-        that.isRendered = true;
-      },
-
-      // Renders the block
-      onBlockRender: function() {
-        if(this.uploadable) {
-          /* Setup the upload button */
-          this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
-          this.$inputs.find('input').on('change', _.bind(function(ev){
-            this.onDrop(ev.currentTarget);
-          }, this));
-
-          this.$editor.show();
-        } else {
-          if(this.$editor[0].children.length == 0){
-            this.loadData();
-          } 
-        }
-      },
-
-      // Handles pasted content
-      onContentPasted: function(event) {
-        if(that.pasteTarget) {
-          var setDataConfig = {};
-          setDataConfig[that.pasteTarget] = event.target.value; 
-          
-          this.setAndLoadData(setDataConfig);
-
-          this.pasteCallback(event, this);
-        }
-      }, 
-
-      // Handle file drops
-      onDrop: function(transferData){
-        var file = transferData.files[0],
-            urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
-
-        // Handle one upload at a time
-        if (/image/.test(file.type)) {
-          this.loading();
-          // Show this image on here
-          this.$inputs.hide();
-
-          var dataObj = {};
-          dataObj[transferData.name] = {
-            url: urlAPI.createObjectURL(file)
-          };
-
-          this.uploader(
-            file,
-            function(data) {
-              this.setData(data);
-              this.loadData(data);
-              this.ready();
-            },
-            function(error){
-              this.addMessage(i18n.t('blocks:image:upload_error'));
-              this.ready();
-            }
-          );
-        }
-
-        that.uploadCallback(event, this);
-      },
-
-      // Handles the output to JSON object
-      _serializeData: function() {
-        if(that.isRendered) {
-          var st = this;
-
-          var data = {},
-              text = null;
-
-          $.each(that.components, function(i, e) {
-            switch(e.type) {
-              case 'textarea':
-                data[i] = st.$('div[contenteditable][name="' + i + '"]')[0].innerHTML;
-                if (data[i].length > 0 &amp;&amp; st.options.convertToMarkdown) {
-                  data[i] = stToMarkdown(data[i], e.type);
-                }
-                break;
-              default:
-                data[i] = st.$('input[name="' + i + '"]').val();
-                break;
-            }
-          });
-
-          return data;
-        }
-      },
-    }));
-
-    return this;
-  }
+  return this;
 };</code></pre>
         </article>
     </section>
@@ -568,13 +584,13 @@ var SirTrevorBlock = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="SirTrevorBlock.html">SirTrevorBlock</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SirTrevorBlock.html">SirTrevorBlock</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 14:36:50 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 15:32:55 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>
