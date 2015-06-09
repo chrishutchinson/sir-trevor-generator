@@ -1,4 +1,32 @@
-/**********************************
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: block.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: block.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**********************************
  * Base Sir Trevor Card Generator
  *
  * Author: Chris Hutchinson [chris.hutchinson@the-times.co.uk]
@@ -111,7 +139,7 @@ var SirTrevorBlock = {
   createElement: function(name, component, value, st) {
     switch(component.type) {
       case 'text':
-        var $element = $('<input>', {
+        var $element = $('&lt;input>', {
           type: 'text',
           name: name,
           placeholder: component.placeholder,
@@ -122,19 +150,19 @@ var SirTrevorBlock = {
       case 'file':
         if(typeof value.url !== 'undefined') {
           // Create our image tag
-          var $element = $('<div>');
-          var $elementImage = $('<img>', {
+          var $element = $('&lt;div>');
+          var $elementImage = $('&lt;img>', {
             src: value.url,
             style: 'max-width: 100%; display: block;'
           });
-          var $elementInput = $('<input>', {
+          var $elementInput = $('&lt;input>', {
             value: value.url,
             type: 'hidden',
             name: name
           });
           $element.append($elementImage).append($elementInput);
         } else {
-          var $element = $('<input>', {
+          var $element = $('&lt;input>', {
             type: 'file',
             name: name,
             class: component.class,
@@ -142,7 +170,7 @@ var SirTrevorBlock = {
         }
         break;
       case 'number':
-        var $element = $('<input>', {
+        var $element = $('&lt;input>', {
           type: 'number',
           name: name,
           min: component.min,
@@ -154,7 +182,7 @@ var SirTrevorBlock = {
         });
         break;
       case 'textarea':
-        var $element = $('<div>', {
+        var $element = $('&lt;div>', {
           contenteditable: true,
           class: 'st-required st-text-block st-formattable',
           name: name
@@ -253,10 +281,10 @@ var SirTrevorBlock = {
       this.uploadTarget = name;
 
       var uploadHTML = [
-        '<div class="st-block__upload-container">',
-          '<input type="file" name="' + name + '" class="st-file-upload">',
-          '<button class="st-upload-btn"><%= i18n.t("general:upload") %></button>',
-        '</div>'
+        '&lt;div class="st-block__upload-container">',
+          '&lt;input type="file" name="' + name + '" class="st-file-upload">',
+          '&lt;button class="st-upload-btn">&lt;%= i18n.t("general:upload") %>&lt;/button>',
+        '&lt;/div>'
       ].join('\n');
       this.setHTML('upload', uploadHTML);
 
@@ -396,7 +424,7 @@ var SirTrevorBlock = {
     this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
 
       // Sets the initial HTML
-      editorHTML: '<div><h2>' + this.title + '</h2><hr /></div>',
+      editorHTML: '&lt;div>&lt;h2>' + this.title + '&lt;/h2>&lt;hr />&lt;/div>',
       
       // Loads data
       loadData: function(data) {
@@ -417,11 +445,11 @@ var SirTrevorBlock = {
 
         //if(data[that.pasteTarget] !== '') {
           $.each(components, function(i, e) {
-            var $elementWrapper = $('<div>', {
+            var $elementWrapper = $('&lt;div>', {
               class: 'st-element',
               style: 'margin-bottom: 10px;'
             });
-            var $elementLabel = $('<label>').html(e.label);
+            var $elementLabel = $('&lt;label>').html(e.label);
             var $element = that.createElement(i, e, data[i], st);
 
             if(e.type === 'textarea') {
@@ -513,7 +541,7 @@ var SirTrevorBlock = {
             switch(e.type) {
               case 'textarea':
                 data[i] = st.$('div[contenteditable][name="' + i + '"]')[0].innerHTML;
-                if (data[i].length > 0 && st.options.convertToMarkdown) {
+                if (data[i].length > 0 &amp;&amp; st.options.convertToMarkdown) {
                   data[i] = stToMarkdown(data[i], e.type);
                 }
                 break;
@@ -530,4 +558,26 @@ var SirTrevorBlock = {
 
     return this;
   }
-};
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="SirTrevorBlock.html">SirTrevorBlock</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 14:36:50 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

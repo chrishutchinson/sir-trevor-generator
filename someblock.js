@@ -1,22 +1,23 @@
 // Initialise the block
-var someBlock = SirTrevorBlock;
+//var someBlock = SirTrevorBlock;
 
 // Set the title
-someBlock.setTitle('Some Block');
+//someBlock.setTitle('Some Block');
 
 // Set the type
-someBlock.setType('someblock');
+//someBlock.setType('someblock');
 
 // Set any attributes
-someBlock.setAttribute('pastable');
+//someBlock.setAttribute('pastable');
 //someBlock.setAttribute('droppable');
+//someBlock.setAttribute('uploadable');
 //someBlock.setAttribute('formattable');
 
 // Set the icon
-someBlock.setIcon('text');
+//someBlock.setIcon('text');
 
 // Add some components
-someBlock.setPastableComponent('video', {
+/*someBlock.setPastableComponent('video', {
   label: 'YouTube Video',
   type: 'text',
   placeholder: 'Enter your YouTube URL here',
@@ -28,38 +29,41 @@ someBlock.setPastableComponent('video', {
   });
   st.$editor.find('[name="' + event.target.name + '"]').hide().after($anchor);
   $anchor.oembed();
-});
-
-someBlock.setComponent('size', {
-  label: 'Size',
-  type: 'number',
-  placeholder: 'Enter the size here',
-  min: 0,
-  max: 10,
-  step: 0.1,
-  default: 5.5,
-  callbacks: {
-    keyup: function(e, st) {
-      console.log('keyup', e, st);
-    },
-    click: function(e, st) {
-      console.log('clicky', e, st);
-    }
-  }
-});
-
-someBlock.setComponent('textarea', {
-  label: 'Text!',
-  type: 'textarea',
-});
-
-someBlock.setComponent('textarea2', {
-  label: 'Text 2!',
-  type: 'textarea',
-});
-
-// Grab the config
-var blockData = someBlock.buildBlock('Someblock');
+});*/
+var block = SirTrevorBlock.setTitle('Some Block')
+                      .setType('someblock')
+                      .setAttribute('droppable')
+                      .setAttribute('uploadable')
+                      .setIcon('text')
+                      .setProperty('minimisable')
+                      .setUploadableComponent('image', {
+                        label: 'Image',
+                        default: null
+                      }, function(event, st) {
+                        console.log(event, st);
+                      })
+                      .setComponent('size', {
+                        label: 'Size',
+                        type: 'number',
+                        placeholder: 'Enter the size here',
+                        min: 0,
+                        max: 10,
+                        step: 0.1,
+                        default: 5.5,
+                        callbacks: {
+                          keyup: function(e, st) {
+                            console.log('keyup', e, st);
+                          },
+                          click: function(e, st) {
+                            console.log('clicky', e, st);
+                          }
+                        }
+                      })
+                      .setComponent('textarea', {
+                        label: 'Text!',
+                        type: 'textarea',
+                      })
+                      .buildBlock('Someblock');
 
 // Setup the block
-SirTrevor.Blocks.Someblock = blockData;
+SirTrevor.Blocks.Someblock = block.block;
