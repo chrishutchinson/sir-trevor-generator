@@ -66,15 +66,21 @@ var SirTrevorBlock = function(title, type) {
         });
         break;
       case 'file':
-        if(typeof value.url !== 'undefined') {
+        if(value) {
           // Create our image tag
           var $element = $('<div>');
+
+          var elementValue = value;
+          if(typeof value.url !== 'undefined') {
+            var elementValue = value.url;
+          }
+
           var $elementImage = $('<a>', {
-            href: value.url,
+            href: elementValue,
             style: 'max-width: 100%; display: block;'
           }).html('View Media');
           var $elementInput = $('<input>', {
-            value: value.url,
+            value: elementValue,
             type: 'hidden',
             name: name
           });
@@ -104,7 +110,13 @@ var SirTrevorBlock = function(title, type) {
           contenteditable: true,
           class: 'st-required st-text-block st-formattable',
           name: name
-        }).html((value ? value : component.default));
+        });
+
+        if(SirTrevor.version == '0.3.0') {
+          $element.html((value ? SirTrevor.toHTML(value) : component.default));
+        } else {
+          $element.html((value ? value : component.default));
+        }
 
         if(this.hasTextarea) {
           console.error('Sir Trevor Block Generator: We are only able to add one formattable textarea at the moment. The "' + name + '"  component will not be formattable.');
@@ -499,7 +511,6 @@ SirTrevorBlock.prototype.buildBlock = function() {
         this.loading();
         // Show this image on here
         this.$inputs.hide();
-
         var dataObj = {};
         dataObj[transferData.name] = {
           url: urlAPI.createObjectURL(file)
@@ -538,6 +549,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
             this.ready();
           },
           function(error){
+            console.error(error);
             this.addMessage(i18n.t('blocks:image:upload_error'));
             this.ready();
           }
@@ -570,6 +582,34 @@ SirTrevorBlock.prototype.buildBlock = function() {
         });
 
         return data;
+      }
+    },
+
+    // Handles the output to JSON object
+    toData: function() {
+      if(this.isRendered) {
+        var st = this;
+
+        var data = {},
+            text = null;
+
+        $.each(that.components, function(i, e) {
+          switch(e.type) {
+            case 'textarea':
+              data[i] = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+              if (data[i].length > 0) {
+                data[i] = SirTrevor.toMarkdown(data[i], e.type);
+              }
+              break;
+            default:
+              data[i] = st.$('input[name="' + i + '"]').val();
+              break;
+          }
+        });
+
+        if(!_.isEmpty(data)) {
+          this.setData(data);
+        }
       }
     },
   }));
