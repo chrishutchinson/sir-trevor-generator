@@ -428,6 +428,8 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
     // Sets the initial HTML
     editorHTML: '<div><h2>' + this.title + '</h2><hr /></div>',
+
+    drawnComponents: 0,
     
     // Loads data
     loadData: function(data) {
@@ -462,6 +464,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
           $elementWrapper.append($elementLabel).append($element);
           st.$editor.append($elementWrapper);
+          st.drawnComponents++;
         });
       //}
 
@@ -472,8 +475,6 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
     // Renders the block
     onBlockRender: function() {
-      this.isRendered = false;
-
       if(this.uploadable) {
         /* Setup the upload button */
         this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
@@ -483,7 +484,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
         this.$editor.show();
       } else {
-        if(this.$editor[0].children.length == 0){
+        if(this.drawnComponents === 0){
           this.loadData();
         } 
       }
