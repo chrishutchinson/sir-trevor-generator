@@ -2,10 +2,10 @@ var block = new SirTrevorBlock('oEmbed', 'oembed');
 
 block.setAttribute('pastable')
       .setIcon('text')
-      .setPastableComponent('video', {
-          label: 'YouTube Video',
+      .setPastableComponent('oembed', {
+          label: 'oEmbed',
           type: 'text',
-          placeholder: 'Enter your YouTube URL here',
+          placeholder: 'Enter your embeddable URL here',
           default: null
         }, function(event, st) {
           // Create the anchor to convert to an embedded element
@@ -21,7 +21,6 @@ block.setAttribute('pastable')
           $anchor.oembed();
         })
       .buildBlock();
-
 
 // Setup the block
 SirTrevor.Blocks.Oembed = block.block;
