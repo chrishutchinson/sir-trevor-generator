@@ -507,8 +507,8 @@ SirTrevorBlock.prototype.buildBlock = function() {
       var file = transferData.files[0],
           urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
 
-      // Handle images
-      if (/image/.test(file.type)) {
+      // Handle images & audio
+      if (/image/.test(file.type) || /audio/.test(file.type)) {
         this.loading();
         // Show this image on here
         this.$inputs.hide();
