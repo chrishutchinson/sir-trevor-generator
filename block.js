@@ -44,6 +44,7 @@ var SirTrevorBlock = function(title, type) {
   this.uploadTarget = false;
   this.hasPastable = false;
   this.hasUploadable = false;
+  this.hasRepeatable = false;
   this.hasTextarea = false;
 
   /**
@@ -64,6 +65,10 @@ var SirTrevorBlock = function(title, type) {
           value: (value ? value : component.default),
           class: component.class,
         });
+
+        if(component.required) {
+          $element.addClass('st-required');
+        }
         break;
       case 'file':
         if(value) {
@@ -92,6 +97,10 @@ var SirTrevorBlock = function(title, type) {
             class: component.class,
           });
         }
+
+        if(component.required) {
+          $element.addClass('st-required');
+        }
         break;
       case 'number':
         var $element = $('<input>', {
@@ -104,11 +113,15 @@ var SirTrevorBlock = function(title, type) {
           value: (value ? value : component.default),
           class: component.class
         });
+
+        if(component.required) {
+          $element.addClass('st-required');
+        }
         break;
       case 'textarea':
         var $element = $('<div>', {
           contenteditable: true,
-          class: 'st-required st-text-block st-formattable',
+          class: 'st-text-block st-formattable',
           name: name
         });
 
@@ -123,6 +136,69 @@ var SirTrevorBlock = function(title, type) {
         }
 
         this.hasTextarea = true;
+
+        if(component.required) {
+          $element.addClass('st-required');
+        }
+        break;
+      case 'repeater':
+        // Set some defaults
+        var that = this;
+        var children = component.components;
+        this.$repeatable = $('<div>', {
+          class: 'st-repeater',
+        });
+        var $child = '';
+
+        // Create a repeatable block based on the supplied components
+        var $childWrapper = $('<div>', {
+          class: 'st-repeater-child',
+          style: 'margin-bottom: 10px;'
+        });
+        var $childWrapperTitle = $('<h3>').css({
+          marginTop: '10px',
+          marginBottom: '5px'
+        }).html('Item #');
+        $childWrapper.append($childWrapperTitle);
+
+        // Iterate through the fields
+        $.each(children, function(n, c) {
+          var $childLabel = $('<label>').html(c.label);
+          $child = that.createElement(n, c);
+          $child.css({
+            marginBottom: '10px'
+          });
+          $childWrapper.append($childLabel).append($child);
+          that.$repeatable.append($childWrapper);
+        });
+
+        // Build the 'Add' button
+        var $repeatButton = $('<button>', {
+          class: 'st-upload-btn st-button st-button--add repeat-button',
+        }).on('click', function(e) {
+          e.preventDefault();
+          st.$editor.find('button.repeat-button').hide();
+
+          var $this = $(this);
+          var $cloned = that.$repeatable.clone(true);
+          $this.parent().after($cloned);
+        }).html('Add item');
+
+        // Build the 'Remove' button
+        var $removeButton = $('<button>', {
+          class: 'st-upload-btn st-button st-button--danger remove-button'
+        }).on('click', function(e) {
+          e.preventDefault();
+          var $this = $(this);
+          $this.parent().remove();
+          $(st.$editor.find('button.repeat-button')).last().show();
+        }).html('Remove item');
+
+        // Add the buttons
+        this.$repeatable.append($repeatButton).append($removeButton);
+
+        // Return the element
+        $element = this.$repeatable.clone(true);
         break;
     }
 
@@ -249,6 +325,21 @@ SirTrevorBlock.prototype.setPastableComponent = function(name, component, callba
     this.setPasteCallback(callback);
   } else {
     console.error('Sir Trevor Block Generator: This block already has a pastable element. The "' + name + '" component has been ignored.');
+  }
+
+  return this;
+};
+
+SirTrevorBlock.prototype.setRepeaterComponent = function(name, children) {
+  if(!this.hasRepeatable) {
+    this.hasRepeatable = true;
+
+    this.components[name] = {
+      type: 'repeater',
+      components: children
+    };
+  } else {
+    console.error('Sir Trevor Block Generator: Each block can only have one repeatable element at present, ' + name + ' has not been configured.');
   }
 
   return this;
@@ -452,7 +543,8 @@ SirTrevorBlock.prototype.buildBlock = function() {
         $.each(components, function(i, e) {
           var $elementWrapper = $('<div>', {
             class: 'st-element',
-            style: 'margin-bottom: 10px;'
+            style: 'margin-bottom: 10px;',
+            'data-name': i
           });
           var $elementLabel = $('<label>').html(e.label);
           var $element = that.createElement(i, e, data[i], st);
@@ -470,11 +562,61 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
       st.$editor.show();
 
-      this.isRendered = true;
+      that.isRendered = true;
+    },
+
+    _initFormatting: function() {
+      // Enable formatting keyboard input
+      var block = this;
+
+      if (!this.options.formatBar) {
+        return;
+      }
+
+      this.options.formatBar.commands.forEach(function(cmd) {
+        if (_.isUndefined(cmd.keyCode)) {
+          return;
+        }
+
+        var ctrlDown = false;
+
+        block.$el
+          .on('keyup','.st-text-block', function(ev) {
+            if(ev.which === 17 || ev.which === 224 || ev.which === 91) {
+              ctrlDown = false;
+            }
+          })
+          .on('keydown','.st-text-block', {formatter: cmd}, function(ev) {
+            if(ev.which === 17 || ev.which === 224 || ev.which === 91) {
+              ctrlDown = true;
+            }
+
+            if(ev.which === ev.data.formatter.keyCode && ctrlDown) {
+              ev.preventDefault();
+              block.execTextBlockCommand(ev.data.formatter.cmd, ev);
+            }
+          });
+      });
+    },
+
+    execTextBlockCommand: function(cmdName, e) {
+      if (_.isUndefined(this._scribe)) {
+        throw "No Scribe instance found to send a command to";
+      }
+
+      var cmd = this._scribe.getCommand(cmdName);
+      if(typeof e !== 'undefined') {
+        this._scribe.el = e.target;
+      }
+      this._scribe.el.focus();
+      cmd.execute();
     },
 
     // Renders the block
     onBlockRender: function() {
+      // Add a class that allows us to target it with CSS
+      this.$el.addClass('st-generated-block');
+
       if(this.uploadable) {
         /* Setup the upload button */
         this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
@@ -568,19 +710,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
         var data = {},
             text = null;
 
-        $.each(that.components, function(i, e) {
-          switch(e.type) {
-            case 'textarea':
-              data[i] = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
-              if (data[i].length > 0 && st.options.convertToMarkdown) {
-                data[i] = stToMarkdown(data[i], e.type);
-              }
-              break;
-            default:
-              data[i] = st.$('input[name="' + i + '"]').val();
-              break;
-          }
-        });
+        this._processData(data, that.components, st);
 
         return data;
       }
@@ -594,25 +724,81 @@ SirTrevorBlock.prototype.buildBlock = function() {
         var data = {},
             text = null;
 
-        $.each(that.components, function(i, e) {
-          switch(e.type) {
-            case 'textarea':
-              data[i] = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
-              if (data[i].length > 0) {
-                data[i] = SirTrevor.toMarkdown(data[i], e.type);
-              }
-              break;
-            default:
-              data[i] = st.$('input[name="' + i + '"]').val();
-              break;
-          }
-        });
+        this._processData(data, that.components, st);
 
         if(!_.isEmpty(data)) {
           this.setData(data);
         }
       }
     },
+
+    // Processes the data for each component
+    _processData: function(data, components, st) {
+      $.each(components, function(i, e) {
+        data[i] = st._processFieldType(i, e, st);
+      });
+
+      return data;
+    },
+
+    // Depending on the field type, processes the data
+    _processFieldType: function(i, e, st, container) {
+      var data;
+      container = container || false;
+
+      switch(e.type) {
+        case 'textarea':
+          if(container) {
+            if(_.isObject(container)) {
+              data = st.$editor.find(container).find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+            } else {
+              data = st.$editor.find(container + ' div[contenteditable][name="' + i + '"]')[0].innerHTML;
+            }
+          } else {
+            data = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
+          }
+          if (data.length > 0) {
+            data = SirTrevor.toMarkdown(data, e.type);
+          }
+          break;
+        case 'repeater':
+          data = [];
+
+          if(container) {
+            if(_.isObject(container)) {
+              var repeaters = st.$editor.find(container).find('div.st-element[data-name="' + i + '"] .st-repeater');
+            } else {
+              var repeaters = st.$editor.find(container + ' div.st-element[data-name="' + i + '"] .st-repeater');
+            }
+          } else {
+            var repeaters = st.$editor.find('div.st-element[data-name="' + i + '"] .st-repeater')
+          }
+
+          $.each(repeaters, function(j, repeater) {
+            var dataModel = {};
+
+            $.each(e.components, function(key, value) {
+              dataModel[key] = st._processFieldType(key, value, st, repeater);
+            });
+
+            data.push(dataModel);
+          });
+          break;
+        default:
+          if(container) {
+            if(_.isObject(container)) {
+              data = st.$(container).find('input[name="' + i + '"]').val();
+            } else {
+              data = st.$(container + ' input[name="' + i + '"]').val();
+            }
+          } else {
+            data = st.$('input[name="' + i + '"]').val();
+          }
+          break;
+      }
+
+      return data;
+    }
   }));
 
   return this;

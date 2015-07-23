@@ -6,7 +6,10 @@
     "Chris Hutchinson <hello@chrishutchinson.me>"
   ],
   "description": "A simple API for generating Sir Trevor JS blocks with multiple fields and components",
-  "main": "block.js",
+  "main": [
+    "block.js",
+    "block.css"
+  ],
   "moduleType": [
     "globals"
   ],
