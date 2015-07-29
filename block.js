@@ -569,6 +569,10 @@ SirTrevorBlock.prototype.buildBlock = function() {
       // Enable formatting keyboard input
       var block = this;
 
+      if(typeof this.options === 'undefined') {
+        return;
+      }
+
       if (!this.options.formatBar) {
         return;
       }
