@@ -718,7 +718,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
     // Handles the output to JSON object
     toData: function() {
-      if(this.isRendered) {
+      if(that.isRendered) {
         var st = this;
 
         var data = {},
