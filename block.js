@@ -24,7 +24,6 @@
  * @property {string}  uploadTarget       - The uploadable target field name for this block
  * @property {boolean}  hasPastable       - Has this block got a pastable component?
  * @property {boolean}  hasUplodable      - Has this block got an uplodable component?
- * @property {boolean}  isRendered        - Is this block fully rendered?
  */
 var SirTrevorBlock = function(title, type) {
   this.title = title;
@@ -197,8 +196,20 @@ var SirTrevorBlock = function(title, type) {
         // Add the buttons
         this.$repeatable.append($repeatButton).append($removeButton);
 
-        // Return the element
-        $element = this.$repeatable.clone(true);
+        // Check if we have data
+        if(value) {
+          $element = $('<div>');
+          $.each(value, function(key, data) {
+            var $part = that.$repeatable.clone(true);
+            $.each(data, function(prop, val) {
+              $part.find('[name="' + prop + '"]').val(val).html(val);
+            });
+            $element.append($part);
+          });
+        } else {
+          // Return the element
+          $element = this.$repeatable.clone(true);
+        }
         break;
     }
 
@@ -477,9 +488,6 @@ SirTrevorBlock.prototype.buildBlock = function() {
     controls: {}
   };
 
-  // Some booleans
-  this.isRendered = false;
-
   // Attributes
   if(that.attributes.pastable) {
     this.defaults.pastable = true;
@@ -521,6 +529,8 @@ SirTrevorBlock.prototype.buildBlock = function() {
     editorHTML: '<div><h2>' + this.title + '</h2><hr /></div>',
 
     drawnComponents: 0,
+
+    isRendered: false,
     
     // Loads data
     loadData: function(data) {
@@ -562,7 +572,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
       st.$editor.show();
 
-      that.isRendered = true;
+      this.isRendered = true;
     },
 
     _initFormatting: function() {
@@ -708,7 +718,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
     // Handles the output to JSON object
     _serializeData: function() {
-      if(that.isRendered) {
+      if(this.isRendered) {
         var st = this;
 
         var data = {},
@@ -722,7 +732,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
     // Handles the output to JSON object
     toData: function() {
-      if(that.isRendered) {
+      if(this.isRendered) {
         var st = this;
 
         var data = {},
