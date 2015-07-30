@@ -40,6 +40,13 @@
 }
 
 /**
+ * Selects
+ */
+.st-generated-block .st-select {
+	width: 100%;
+}
+
+/**
  * Deals with counters on repeater elements
  */
 .st-generated-block .st-element  {

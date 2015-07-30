@@ -140,6 +140,57 @@ var SirTrevorBlock = function(title, type) {
           $element.addClass('st-required');
         }
         break;
+      case 'select':
+        var $element = $('<select>', {
+          class: 'st-select',
+          name: name
+        });
+
+        switch(component.sourceType) {
+          case 'ajax':
+            $.ajax({
+              type: 'get',
+              url: component.source,
+              success: function(response) {
+                $.each(response, function(key, string) {
+                  var $option = $('<option>', {
+                    value: key,
+                  }).html(string);
+
+                  if(value && value === key) {
+                    $option.prop('selected', true);
+                  }
+
+                  $element.append($option);
+                });
+              },
+              error: function(response) {
+                console.error(response);
+              }
+            });
+            break;
+          case 'object':
+            if(component.nullable) {
+              var $option = $('<option>', {
+                value: '',
+              }).html('-- Select --');
+              $element.append($option);
+            }
+
+            $.each(component.source, function(key, string) {
+              var $option = $('<option>', {
+                value: key,
+              }).html(string);
+
+              if(value && value === key) {
+                $option.prop('selected', true);
+              }
+
+              $element.append($option);
+            });
+            break;
+        }
+        break;
       case 'repeater':
         // Set some defaults
         var that = this;
@@ -773,6 +824,17 @@ SirTrevorBlock.prototype.buildBlock = function() {
           }
           if (data.length > 0) {
             data = SirTrevor.toMarkdown(data, e.type);
+          }
+          break;
+        case 'select':
+          if(container) {
+            if(_.isObject(container)) {
+              data = st.$(container).find('select[name="' + i + '"]').val();
+            } else {
+              data = st.$(container + ' select[name="' + i + '"]').val();
+            }
+          } else {
+            data = st.$('select[name="' + i + '"]').val();
           }
           break;
         case 'repeater':
