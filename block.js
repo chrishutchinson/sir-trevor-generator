@@ -143,29 +143,53 @@ var SirTrevorBlock = function(title, type) {
       case 'select':
         var $element = $('<select>', {
           class: 'st-select',
-          name: name
+          name: name,
         });
 
         switch(component.sourceType) {
           case 'ajax':
+            // Set a loading value and disable the select until we load the data
+            var $loadingOption = $('<option>', {
+              value: ''
+            }).html('Loading data...');
+            $element.append($loadingOption).prop('disabled', true);
+
             $.ajax({
               type: 'get',
               url: component.source,
               success: function(response) {
-                $.each(response, function(key, string) {
-                  var $option = $('<option>', {
-                    value: key,
-                  }).html(string);
+                // Data has been loaded, clear the loader and re-enable the select
+                $element.html('').prop('disabled', false);
 
-                  if(value && value === key) {
-                    $option.prop('selected', true);
-                  }
+                // Decode the response
+                response = JSON.parse(response);
+                if(response.length === 0) {
+                  // We've not got any data, boo!
+                  var $errorOption = $('<option>', {
+                    value: ''
+                  }).html('Error loading data via AJAX');
+                  $element.append($errorOption).prop('disabled', true);
+                } else {
+                  // Iterate through the response data
+                  $.each(response, function(key, string) {
+                    var $option = $('<option>', {
+                      value: key,
+                    }).html(string);
 
-                  $element.append($option);
-                });
+                    if(value && value === key) {
+                      $option.prop('selected', true);
+                    }
+
+                    $element.append($option);
+                  });
+                }
               },
               error: function(response) {
-                console.error(response);
+                // Unknown error loading, let the user know
+                var $errorOption = $('<option>', {
+                  value: ''
+                }).html('Error loading data via AJAX');
+                $element.html('').append($errorOption);
               }
             });
             break;
