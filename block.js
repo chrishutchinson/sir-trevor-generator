@@ -847,7 +847,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
             data = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
           }
           if (data.length > 0) {
-            data = SirTrevor.toMarkdown(data, e.type);
+            data = SirTrevor.toHTML(data, e.type);
           }
           break;
         case 'select':
