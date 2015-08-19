@@ -38,6 +38,7 @@
 
 .st-generated-block .st-button.st-button--table {
 	display: table;
+	margin-top: 5px;
 }
 
 .st-generated-block .st-button.st-button--danger,

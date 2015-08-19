@@ -71,40 +71,81 @@ var SirTrevorBlock = function(title, type) {
         }
         break;
       case 'file':
-        if(value) {
-          // Create our image tag
-          var $element = $('<div>');
+        var $element = $('<input>', {
+          type: 'file',
+          name: name,
+          class: component.class,
+          'data-parent': parent
+        });
 
-          var elementValue = value;
-          if(typeof value.url !== 'undefined') {
-            var elementValue = value.url;
-          }
-
-          var $elementImage = $('<a>', {
-            href: elementValue,
-            style: 'max-width: 100%; display: block;'
-          }).html('View Media');
-          var $elementInput = $('<input>', {
-            value: elementValue,
-            type: 'hidden',
-            name: name
-          });
-          $element.append($elementImage).append($elementInput);
-        } else {
-          var $element = $('<input>', {
-            type: 'file',
-            name: name,
-            class: component.class,
-            'data-parent': parent
-          });
-
-          $element.on('change', function(ev) {
-            st.onDrop(ev.currentTarget);
-          });
-        }
-
+        $element.on('change', function(ev) {
+          st.onDrop(ev.currentTarget);
+        });
         if(component.required) {
           $element.addClass('st-required');
+        }
+
+        if(value) {
+          // Hide the file uploader, and prevent it being included in data scapes for this card
+          $element.val('').data('namestore', $element.attr('name')).removeAttr('name');
+
+          // Setup the template and HTML for the file preview
+          var $filePreview = $('<div>');
+          var $filePreviewHiddenField = $('<input>', {
+            type: 'hidden',
+            val: value,
+            name: $element.data('namestore')
+          });
+
+          // Handle images
+          if (/image/.test(value)) {
+            var typeData = 'image';
+          }
+
+          // Handle audio
+          if (/audio/.test(value)) {
+            var typeData = 'audio';
+          }
+
+          // Handle video
+          if (/video/.test(value)) {
+            var typeData = 'video';
+          }
+
+          switch(typeData) {
+            case 'image':
+            default:
+              var $filePreviewElem = $('<img>', { 
+                src: value, 
+                class: 'st-image-preview'
+              });
+              break;
+            case 'audio':
+              var $filePreviewElem = $('<audio>', { 
+                src: value, 
+                controls: 'controls',
+                preload: 'auto',
+              });
+              break;
+            case 'video':
+              var $filePreviewElem = $('<video>', { 
+                src: value, 
+                controls: 'controls',
+              });
+              break;
+          }
+          var $filePreviewRemove = $('<a>', { 
+            class: 'st-upload-btn st-button st-button--small st-button--table st-button--remove remove-button',
+          }).html('Remove').on('click', function(e) {
+            // On click of the remove button, show the uploader and remove the preview
+            e.preventDefault();
+            $element.attr('name', $element.data('namestore')).show();
+            $filePreview.remove();
+          });
+          $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+          var $newElement = $('<div>');
+          $newElement.append($element).append($filePreview);
+          $element = $newElement;
         }
         break;
       case 'number':
