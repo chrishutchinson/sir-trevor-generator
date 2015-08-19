@@ -87,7 +87,7 @@ var SirTrevorBlock = function(title, type) {
 
         if(value) {
           // Hide the file uploader, and prevent it being included in data scapes for this card
-          $element.val('').data('namestore', $element.attr('name')).removeAttr('name');
+          $element.val('').data('namestore', $element.attr('name')).removeAttr('name').hide();
 
           // Setup the template and HTML for the file preview
           var $filePreview = $('<div>');
@@ -97,19 +97,20 @@ var SirTrevorBlock = function(title, type) {
             name: $element.data('namestore')
           });
 
+          var typeData = '';
           // Handle images
           if (/image/.test(value)) {
-            var typeData = 'image';
+            typeData = 'image';
           }
 
           // Handle audio
           if (/audio/.test(value)) {
-            var typeData = 'audio';
+            typeData = 'audio';
           }
 
           // Handle video
           if (/video/.test(value)) {
-            var typeData = 'video';
+            typeData = 'video';
           }
 
           switch(typeData) {
@@ -134,12 +135,13 @@ var SirTrevorBlock = function(title, type) {
               });
               break;
           }
+          var $el = $element;
           var $filePreviewRemove = $('<a>', { 
             class: 'st-upload-btn st-button st-button--small st-button--table st-button--remove remove-button',
           }).html('Remove').on('click', function(e) {
             // On click of the remove button, show the uploader and remove the preview
             e.preventDefault();
-            $element.attr('name', $element.data('namestore')).show();
+            $el.attr('name', $el.data('namestore')).show();
             $filePreview.remove();
           });
           $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
