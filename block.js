@@ -53,8 +53,9 @@ var SirTrevorBlock = function(title, type) {
    * @param {object} component    - The component configuration
    * @param {string} value        - The value of this component
    * @param {object} st           - The Sir Trevor JS instance.
+   * @param {object} parent       - The parent component (if repeater)
    */
-  this.createElement = function(name, component, value, st) {
+  this.createElement = function(name, component, value, st, parent) {
     switch(component.type) {
       case 'text':
         var $element = $('<input>', {
@@ -94,6 +95,11 @@ var SirTrevorBlock = function(title, type) {
             type: 'file',
             name: name,
             class: component.class,
+            'data-parent': parent
+          });
+
+          $element.on('change', function(ev) {
+            st.onDrop(ev.currentTarget);
           });
         }
 
@@ -220,7 +226,7 @@ var SirTrevorBlock = function(title, type) {
         var that = this;
         var children = component.components;
         this.$repeatable = $('<div>', {
-          class: 'st-repeater',
+          class: 'st-repeater'
         });
         var $child = '';
 
@@ -238,7 +244,7 @@ var SirTrevorBlock = function(title, type) {
         // Iterate through the fields
         $.each(children, function(n, c) {
           var $childLabel = $('<label>').html(c.label);
-          $child = that.createElement(n, c);
+          $child = that.createElement(n, c, null, st, name);
           $child.css({
             marginBottom: '10px'
           });
@@ -277,7 +283,69 @@ var SirTrevorBlock = function(title, type) {
           $.each(value, function(key, data) {
             var $part = that.$repeatable.clone(true);
             $.each(data, function(prop, val) {
-              $part.find('[name="' + prop + '"]').val(val).html(val);
+              var $partElem = $part.find('[name="' + prop + '"]');
+              if($partElem.attr('type') === 'file') {
+                // Hide the file uploader, and prevent it being included in data scapes for this card
+                $partElem.val('').data('namestore', $partElem.attr('name')).removeAttr('name').hide();
+
+                // Setup the template and HTML for the file preview
+                var $filePreview = $('<div>');
+                var $filePreviewHiddenField = $('<input>', {
+                  type: 'hidden',
+                  val: val,
+                  name: prop
+                });
+
+                // Handle images
+                if (/image/.test(val)) {
+                  var typeData = 'image';
+                }
+
+                // Handle audio
+                if (/audio/.test(val)) {
+                  var typeData = 'audio';
+                }
+
+                // Handle video
+                if (/video/.test(val)) {
+                  var typeData = 'video';
+                }
+
+                switch(typeData) {
+                  case 'image':
+                  default:
+                    var $filePreviewElem = $('<img>', { 
+                      src: val, 
+                      class: 'st-image-preview'
+                    });
+                    break;
+                  case 'audio':
+                    var $filePreviewElem = $('<audio>', { 
+                      src: val, 
+                      controls: 'controls',
+                      preload: 'auto',
+                    });
+                    break;
+                  case 'video':
+                    var $filePreviewElem = $('<video>', { 
+                      src: val, 
+                      controls: 'controls',
+                    });
+                    break;
+                }
+                var $filePreviewRemove = $('<a>', { 
+                  class: 'st-upload-btn st-button st-button--small st-button--table st-button--remove remove-button',
+                }).html('Remove').on('click', function(e) {
+                  // On click of the remove button, show the uploader and remove the preview
+                  e.preventDefault();
+                  $partElem.attr('name', $partElem.data('namestore')).show();
+                  $filePreview.remove();
+                });
+                $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+                $partElem.after($filePreview);
+              } else {
+                $partElem.val(val).html(val);
+              }
             });
             $element.append($part);
           });
@@ -441,7 +509,7 @@ SirTrevorBlock.prototype.setRepeaterComponent = function(name, children) {
  * @returns {object} this       - The instance on which this method was called.
  */
 SirTrevorBlock.prototype.setUploadableComponent = function(name, component, callback) {
-  if(!this.hasUplodable) {
+  /*if(!this.hasUplodable) {
     this.hasUplodable = true;
     this.components[name] = component;
     this.components[name].type = 'file';
@@ -462,7 +530,9 @@ SirTrevorBlock.prototype.setUploadableComponent = function(name, component, call
     this.setUploadCallback(callback);
   } else {
     console.error('Sir Trevor Block Generator: This block already has a uploadable element. The "' + name + '" component has been ignored.');
-  }
+  }*/
+
+  this.components[name] = component;
 
   return this;
 };
@@ -591,11 +661,6 @@ SirTrevorBlock.prototype.buildBlock = function() {
       html: that.html.paste, 
     };
   }
-  if(that.html.upload) {
-    this.defaults.upload_options = {
-      html: that.html.upload, 
-    };
-  }
 
   // Block data
   this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
@@ -606,6 +671,8 @@ SirTrevorBlock.prototype.buildBlock = function() {
     drawnComponents: 0,
 
     isRendered: false,
+
+    repeatableComponents: 0,
     
     // Loads data
     loadData: function(data) {
@@ -618,6 +685,54 @@ SirTrevorBlock.prototype.buildBlock = function() {
       });
 
       this.addComponents(data, that.components);
+    },
+
+    updateFileData: function(data, target) {
+      var $target = $(target);
+      
+      // Hide the file uploader, and prevent it being included in data scapes for this card
+      $target.val('').data('namestore', $target.attr('name')).removeAttr('name').hide();
+            
+      // Setup the template and HTML for the file preview
+      var $filePreview = $('<div>');
+      var $filePreviewHiddenField = $('<input>', {
+        type: 'hidden',
+        val: data.url,
+        name: $target.data('namestore')
+      });
+      switch(data.type) {
+        case 'image':
+          var $filePreviewElem = $('<img>', { 
+            src: data.url, 
+            class: 'st-image-preview'
+          });
+          break;
+        case 'audio':
+          var $filePreviewElem = $('<audio>', { 
+            src: data.url, 
+            controls: 'controls',
+            preload: 'auto',
+          });
+          break;
+        case 'video':
+          var $filePreviewElem = $('<video>', { 
+            src: data.url, 
+            controls: 'controls',
+          });
+          break;
+      }
+      var $filePreviewRemove = $('<a>', { 
+        class: 'st-upload-btn st-button st-button--small st-button--table st-button--remove remove-button',
+      }).html('Remove').on('click', function(e) {
+        // On click of the remove button, show the uploader and remove the preview
+        e.preventDefault();
+        $target.attr('name', $target.data('namestore')).show();
+        $filePreview.remove();
+      });
+      $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+
+      // Add the preview
+      $target.after($filePreview);   
     },
 
     // Adds components
@@ -707,17 +822,12 @@ SirTrevorBlock.prototype.buildBlock = function() {
       this.$el.addClass('st-generated-block');
 
       if(this.uploadable) {
-        /* Setup the upload button */
-        this.$inputs.find('button').bind('click', function(ev){ ev.preventDefault(); });
-        this.$inputs.find('input').on('change', _.bind(function(ev){
-          this.onDrop(ev.currentTarget);
-        }, this));
-
+        this.$inputs.hide();
         this.$editor.show();
-      } else {
-        if(this.drawnComponents === 0){
-          this.loadData();
-        } 
+      }
+
+      if(this.drawnComponents === 0){
+        this.loadData();
       }
     },
 
@@ -738,55 +848,38 @@ SirTrevorBlock.prototype.buildBlock = function() {
       var file = transferData.files[0],
           urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
 
-      // Handle images & audio
-      if (/image/.test(file.type) || /audio/.test(file.type)) {
-        this.loading();
-        // Show this image on here
-        this.$inputs.hide();
-        var dataObj = {};
-        dataObj[transferData.name] = {
-          url: urlAPI.createObjectURL(file)
-        };
-
-        this.uploader(
-          file,
-          function(data) {
-            this.setData(data);
-            this.loadData(data);
-            this.ready();
-          },
-          function(error){
-            this.addMessage(i18n.t('blocks:image:upload_error'));
-            this.ready();
-          }
-        );
+      // Handle images
+      if (/image/.test(file.type)) {
+        var typeData = 'image';
       }
 
-      // Handle Videos
+      // Handle audio
+      if (/audio/.test(file.type)) {
+        var typeData = 'audio';
+      }
+
+      // Handle video
       if (/video/.test(file.type)) {
-        this.loading();
-        // Show this image on here
-        this.$inputs.hide();
-
-        var dataObj = {};
-        dataObj[transferData.name] = {
-          url: urlAPI.createObjectURL(file)
-        };
-
-        this.uploader(
-          file,
-          function(data) {
-            this.setData(data);
-            this.loadData(data);
-            this.ready();
-          },
-          function(error){
-            console.error(error);
-            this.addMessage(i18n.t('blocks:image:upload_error'));
-            this.ready();
-          }
-        );
+        var typeData = 'video';
       }
+
+      this.loading();
+
+      this.uploader(
+        file,
+        function(data) {
+          this.updateFileData({
+            url: data.file.url,
+            type: typeData,
+          }, transferData);
+          this.ready();
+        },
+        function(error){
+          console.error(error);
+          this.addMessage(i18n.t('blocks:image:upload_error'));
+          this.ready();
+        }
+      );
 
       that.uploadCallback(event, this);
     },
