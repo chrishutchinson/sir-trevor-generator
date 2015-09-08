@@ -397,6 +397,18 @@ var SirTrevorBlock = function(title, type) {
           $element = this.$repeatable.clone(true);
         }
         break;
+      case 'checkbox':
+        var $element= $('<input>', {
+          type: 'checkbox',
+          name: name,
+          checked: (value ? value : component.default),
+          class: component.class
+        });
+
+        if(component.required) {
+          $element.addClass('st-required');
+        }
+        break;
     }
 
     if(!_.isUndefined(component.callbacks)) {
@@ -1019,6 +1031,17 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
             data.push(dataModel);
           });
+          break;
+        case 'checkbox':
+          if(container) {
+            if(_.isObject(container)) {
+              data = st.$(container).find('input[name="' + i + '"]')[0].checked;
+            } else {
+              data = st.$(container + ' input[name="' + i + '"]')[0].checked;
+            }
+          } else {
+            data = st.$('input[name="' + i + '"]')[0].checked;
+          }
           break;
         default:
           if(container) {

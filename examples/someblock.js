@@ -32,6 +32,10 @@ block.setAttribute('droppable')
       .setComponent('textarea', {
         label: 'Text!',
         type: 'textarea',
+      })
+      .setComponent('checkbox', {
+        label: 'Checkbox',
+        type: 'checkbox'
       });
 
 // Build our block
