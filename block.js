@@ -386,6 +386,8 @@ var SirTrevorBlock = function(title, type) {
                 });
                 $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
                 $partElem.after($filePreview);
+              } else if ($partElem.attr('type') === 'checkbox') {
+                $partElem.prop('checked', val);
               } else {
                 $partElem.val(val).html(val);
               }
