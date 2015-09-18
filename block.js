@@ -44,7 +44,6 @@ var SirTrevorBlock = function(title, type) {
   this.hasPastable = false;
   this.hasUploadable = false;
   this.hasRepeatable = false;
-  this.hasTextarea = false;
 
   /**
    * Creates an element using jQuery
@@ -169,25 +168,23 @@ var SirTrevorBlock = function(title, type) {
       case 'textarea':
         var $element = $('<div>', {
           contenteditable: true,
-          class: 'st-text-block st-formattable',
+          class: 'st-text-block st-formattable st-textarea-block__editor st-block__editor',
           name: name
         });
 
+        component.default = component.default || '';
+
+        var componentValue = (value ? value : component.default);
         if(SirTrevor.version == '0.3.0') {
-          $element.html((value ? SirTrevor.toHTML(value) : component.default));
-        } else {
-          $element.html((value ? value : component.default));
+          componentValue = (value ? SirTrevor.toHTML(value) : component.default);
         }
-
-        if(this.hasTextarea) {
-          console.error('Sir Trevor Block Generator: We are only able to add one formattable textarea at the moment. The "' + name + '"  component will not be formattable.');
-        }
-
-        this.hasTextarea = true;
 
         if(component.required) {
           $element.addClass('st-required');
         }
+
+        var editor = st.newTextEditor($element[0].outerHTML, componentValue);
+        $element = $(editor.node);
         break;
       case 'select':
         var $element = $('<select>', {
@@ -700,10 +697,23 @@ SirTrevorBlock.prototype.buildBlock = function() {
   }
   if(that.attributes.formattable) {
     this.defaults.formattable = true;
+    this.defaults.multi_editable = true;
+    this.defaults.scribeOptions = { 
+      tags: {
+        script: false,
+        ul: true,
+        li: true,
+        br: false
+      }
+    };
   }
   if(that.attributes.uploadable) {
     this.defaults.uploadable = true;
   }
+
+  this.defaults.configureScribe = function(scribe) {
+    scribe.use(new ScribeGeneratorBlockPlugin(this));
+  };
 
   // Properties
   if(this.properties.minimisable) {
@@ -796,81 +806,23 @@ SirTrevorBlock.prototype.buildBlock = function() {
     addComponents: function(data, components) {
       var st = this;
 
-      //if(data[that.pasteTarget] !== '') {
-        $.each(components, function(i, e) {
-          var $elementWrapper = $('<div>', {
-            class: 'st-element',
-            style: 'margin-bottom: 10px;',
-            'data-name': i
-          });
-          var $elementLabel = $('<label>').html(e.label);
-          var $element = that.createElement(i, e, data[i], st);
-
-          if(e.type === 'textarea') {
-            st.text_block = $element;
-            st._initTextBlocks();
-          }
-
-          $elementWrapper.append($elementLabel).append($element);
-          st.$editor.append($elementWrapper);
-          st.drawnComponents++;
+      $.each(components, function(i, e) {
+        var $elementWrapper = $('<div>', {
+          class: 'st-element',
+          style: 'margin-bottom: 10px;',
+          'data-name': i
         });
-      //}
+        var $elementLabel = $('<label>').html(e.label);
+        var $element = that.createElement(i, e, data[i], st);
+
+        $elementWrapper.append($elementLabel).append($element);
+        st.$editor.append($elementWrapper);
+        st.drawnComponents++;
+      });
 
       st.$editor.show();
 
       this.isRendered = true;
-    },
-
-    _initFormatting: function() {
-      // Enable formatting keyboard input
-      var block = this;
-
-      if(typeof this.options === 'undefined') {
-        return;
-      }
-
-      if (!this.options.formatBar) {
-        return;
-      }
-
-      this.options.formatBar.commands.forEach(function(cmd) {
-        if (_.isUndefined(cmd.keyCode)) {
-          return;
-        }
-
-        var ctrlDown = false;
-
-        block.$el
-          .on('keyup','.st-text-block', function(ev) {
-            if(ev.which === 17 || ev.which === 224 || ev.which === 91) {
-              ctrlDown = false;
-            }
-          })
-          .on('keydown','.st-text-block', {formatter: cmd}, function(ev) {
-            if(ev.which === 17 || ev.which === 224 || ev.which === 91) {
-              ctrlDown = true;
-            }
-
-            if(ev.which === ev.data.formatter.keyCode && ctrlDown) {
-              ev.preventDefault();
-              block.execTextBlockCommand(ev.data.formatter.cmd, ev);
-            }
-          });
-      });
-    },
-
-    execTextBlockCommand: function(cmdName, e) {
-      if (_.isUndefined(this._scribe)) {
-        throw "No Scribe instance found to send a command to";
-      }
-
-      var cmd = this._scribe.getCommand(cmdName);
-      if(typeof e !== 'undefined') {
-        this._scribe.el = e.target;
-      }
-      this._scribe.el.focus();
-      cmd.execute();
     },
 
     // Renders the block
@@ -1063,4 +1015,10 @@ SirTrevorBlock.prototype.buildBlock = function() {
   }));
 
   return this;
+};
+
+var ScribeGeneratorBlockPlugin = function(block) {
+  return function(scribe) {
+    
+  };
 };
