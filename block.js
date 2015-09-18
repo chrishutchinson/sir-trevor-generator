@@ -270,58 +270,73 @@ var SirTrevorBlock = function(title, type) {
         });
         var $child = '';
 
-        // Create a repeatable block based on the supplied components
-        var $childWrapper = $('<div>', {
-          class: 'st-repeater-child',
-          style: 'margin-bottom: 10px;'
-        });
-        var $childWrapperTitle = $('<h3>').css({
-          marginTop: '10px',
-          marginBottom: '5px'
-        }).html('Item #');
-        $childWrapper.append($childWrapperTitle);
-
-        // Iterate through the fields
-        $.each(children, function(n, c) {
-          var $childLabel = $('<label>').html(c.label);
-          $child = that.createElement(n, c, null, st, name);
-          $child.css({
-            marginBottom: '10px'
-          });
-          $childWrapper.append($childLabel).append($child);
-          that.$repeatable.append($childWrapper);
-        });
-
-        // Build the 'Add' button
         var $repeatButton = $('<button>', {
           class: 'st-upload-btn st-button st-button--add repeat-button',
-        }).on('click', function(e) {
-          e.preventDefault();
-          st.$editor.find('button.repeat-button').hide();
-
-          var $this = $(this);
-          var $cloned = that.$repeatable.clone(true);
-          $this.parent().after($cloned);
         }).html('Add item');
 
-        // Build the 'Remove' button
         var $removeButton = $('<button>', {
           class: 'st-upload-btn st-button st-button--danger remove-button'
-        }).on('click', function(e) {
+        }).html('Remove item');
+
+        // Build the 'Add' button
+        $repeatButton.on('click', function(e) {
+          e.preventDefault();
+
+          var $this = $(this);
+          var $cloned = createRepeatingElement();
+          $this.parent().after($cloned);
+        });
+
+        // Build the 'Remove' button
+        $removeButton.on('click', function(e) {
           e.preventDefault();
           var $this = $(this);
           $this.parent().remove();
           $(st.$editor.find('button.repeat-button')).last().show();
-        }).html('Remove item');
+        });
+
+        var createRepeatingElement = function() {
+          var $el = $('<div>', {
+            class: 'st-repeater'
+          });
+          var $child = '';
+          var $childWrapper = $('<div>', {
+            class: 'st-repeater-child',
+            style: 'margin-bottom: 10px;'
+          });
+          var $childWrapperTitle = $('<h3>').css({
+            marginTop: '10px',
+            marginBottom: '5px'
+          }).html('Item #');
+          $childWrapper.append($childWrapperTitle);
+
+          // Iterate through the fields
+          $.each(children, function(n, c) {
+            var $childLabel = $('<label>').html(c.label);
+            $child = that.createElement(n, c, null, st, name);
+            $child.css({
+              marginBottom: '10px'
+            });
+            $childWrapper.append($childLabel).append($child);
+            $el.append($childWrapper);
+          });
+
+          $el.append($repeatButton.clone(true));
+          $el.append($removeButton.clone(true));
+
+          return $el;
+        };
+
+        this.$repeatable = createRepeatingElement();
 
         // Add the buttons
-        this.$repeatable.append($repeatButton).append($removeButton);
+        this.$repeatable;
 
         // Check if we have data
         if(value) {
           $element = $('<div>');
           $.each(value, function(key, data) {
-            var $part = that.$repeatable.clone(true);
+            var $part = createRepeatingElement();
             $.each(data, function(prop, val) {
               var $partElem = $part.find('[name="' + prop + '"]');
               if($partElem.attr('type') === 'file') {
@@ -393,7 +408,7 @@ var SirTrevorBlock = function(title, type) {
           });
         } else {
           // Return the element
-          $element = this.$repeatable.clone(true);
+          $element = this.$repeatable;
         }
         break;
       case 'checkbox':
