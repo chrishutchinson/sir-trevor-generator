@@ -336,16 +336,11 @@ var SirTrevorBlock = function(title, type) {
               var $partElem = $part.find('[name="' + prop + '"]');
               if($partElem.attr('type') === 'file') {
                 // Hide the file uploader, and prevent it being included in data scapes for this card
-                $partElem.val('').data('namestore', $partElem.attr('name')).removeAttr('name').hide();
+                $partElem.attr('type', 'hidden').val(val);
 
                 // Setup the template and HTML for the file preview
                 var $filePreview = $('<div>');
-                var $filePreviewHiddenField = $('<input>', {
-                  type: 'hidden',
-                  val: val,
-                  name: prop
-                });
-
+                
                 // Handle images
                 if (/image/.test(val)) {
                   var typeData = 'image';
@@ -388,10 +383,10 @@ var SirTrevorBlock = function(title, type) {
                 }).html('Remove').on('click', function(e) {
                   // On click of the remove button, show the uploader and remove the preview
                   e.preventDefault();
-                  $partElem.attr('name', $partElem.data('namestore')).show();
+                  $partElem.attr('type', 'file').val('');
                   $filePreview.remove();
                 });
-                $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+                $filePreview.append($filePreviewElem).append($filePreviewRemove);
                 $partElem.after($filePreview);
               } else if ($partElem.attr('type') === 'checkbox') {
                 $partElem.prop('checked', val);
