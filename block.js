@@ -187,6 +187,8 @@ var SirTrevorBlock = function(title, type) {
           name: name,
         });
 
+        component.default = component.default || '';
+
         switch(component.sourceType) {
           case 'ajax':
             // Set a loading value and disable the select until we load the data
@@ -254,6 +256,11 @@ var SirTrevorBlock = function(title, type) {
               $element.append($option);
             });
             break;
+        }
+
+        // Set the default value if supplied
+        if(component.default) {
+          $element.val(component.default);
         }
         break;
       case 'repeater':
