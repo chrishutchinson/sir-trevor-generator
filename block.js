@@ -86,15 +86,10 @@ var SirTrevorBlock = function(title, type) {
 
         if(value) {
           // Hide the file uploader, and prevent it being included in data scapes for this card
-          $element.val('').data('namestore', $element.attr('name')).removeAttr('name').hide();
+          $element.attr('type', 'hidden').val(value);
 
           // Setup the template and HTML for the file preview
           var $filePreview = $('<div>');
-          var $filePreviewHiddenField = $('<input>', {
-            type: 'hidden',
-            val: value,
-            name: $element.data('namestore')
-          });
 
           var typeData = '';
           // Handle images
@@ -140,10 +135,10 @@ var SirTrevorBlock = function(title, type) {
           }).html('Remove').on('click', function(e) {
             // On click of the remove button, show the uploader and remove the preview
             e.preventDefault();
-            $el.attr('name', $el.data('namestore')).show();
+            $el.attr('type', 'file').val('');
             $filePreview.remove();
           });
-          $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+          $filePreview.append($filePreviewElem).append($filePreviewRemove);
           var $newElement = $('<div>');
           $newElement.append($element).append($filePreview);
           $element = $newElement;
@@ -773,15 +768,10 @@ SirTrevorBlock.prototype.buildBlock = function() {
       var $target = $(target);
       
       // Hide the file uploader, and prevent it being included in data scapes for this card
-      $target.val('').data('namestore', $target.attr('name')).removeAttr('name').hide();
+      $target.attr('type', 'hidden').val(data.url);
             
       // Setup the template and HTML for the file preview
       var $filePreview = $('<div>');
-      var $filePreviewHiddenField = $('<input>', {
-        type: 'hidden',
-        val: data.url,
-        name: $target.data('namestore')
-      });
       switch(data.type) {
         case 'image':
           var $filePreviewElem = $('<img>', { 
@@ -808,10 +798,10 @@ SirTrevorBlock.prototype.buildBlock = function() {
       }).html('Remove').on('click', function(e) {
         // On click of the remove button, show the uploader and remove the preview
         e.preventDefault();
-        $target.attr('name', $target.data('namestore')).show();
+        $target.attr('type', 'file').val('');
         $filePreview.remove();
       });
-      $filePreview.append($filePreviewHiddenField).append($filePreviewElem).append($filePreviewRemove);
+      $filePreview.append($filePreviewElem).append($filePreviewRemove);
 
       // Add the preview
       $target.after($filePreview);   
@@ -901,6 +891,7 @@ SirTrevorBlock.prototype.buildBlock = function() {
         function(error){
           console.error(error);
           this.addMessage(i18n.t('blocks:image:upload_error'));
+          $(transferData).val('');
           this.ready();
         }
       );
