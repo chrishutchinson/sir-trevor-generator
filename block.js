@@ -715,7 +715,10 @@ SirTrevorBlock.prototype.buildBlock = function() {
         script: false,
         ul: true,
         li: true,
-        br: false
+        br: false,
+        p: {
+          style: false
+        }
       }
     };
   }
