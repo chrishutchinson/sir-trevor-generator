@@ -29,5 +29,5 @@
   ],
   "dependencies": {
     "handsontable": "~0.18.0"
-  },
+  }
 }
