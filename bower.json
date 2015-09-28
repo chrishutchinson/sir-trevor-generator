@@ -26,5 +26,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "handsontable": "~0.18.0"
+  },
 }

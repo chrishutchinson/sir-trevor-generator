@@ -321,6 +321,10 @@ var SirTrevorBlock = function(title, type) {
             });
             $childWrapper.append($childLabel).append($child);
             $el.append($childWrapper);
+
+            if($child.data('hasCallback')) {
+              $child.data('callback')();
+            }
           });
 
           $el.append($repeatButton.clone(true));
@@ -397,8 +401,14 @@ var SirTrevorBlock = function(title, type) {
                 $partElem.after($filePreview);
               } else if ($partElem.attr('type') === 'checkbox') {
                 $partElem.prop('checked', val);
+              } else if ($partElem.attr('type') === 'table') {
+                $partElem.data('callback')(val);
               } else {
                 $partElem.val(val).html(val);
+              }
+
+              if($partElem.data('hasCallback')) {
+                $partElem.data('callback')();
               }
             });
             $element.append($part);
@@ -409,7 +419,7 @@ var SirTrevorBlock = function(title, type) {
         }
         break;
       case 'checkbox':
-        var $element= $('<input>', {
+        var $element = $('<input>', {
           type: 'checkbox',
           name: name,
           checked: (value ? value : component.default),
@@ -419,6 +429,33 @@ var SirTrevorBlock = function(title, type) {
         if(component.required) {
           $element.addClass('st-required');
         }
+        break;
+      case 'table':
+        var $element = $('<div>', {
+          name: name,
+          type: 'table'
+        });
+
+        var hot = new Handsontable($element[0], _.extend(component.tableConfig, {
+          afterChange: function(change, source) {
+            $element.data('hotData', JSON.stringify(this.getData()));
+          },
+          data: (value ? value : component.default)
+        }));
+
+        $element.data('hot', hot);
+        $element.data('data', (value ? value : component.default));
+
+        $element.data('hasCallback', true);
+        $element.data('callback', function(data) {
+          setTimeout(function(data) {
+            if(data) {
+              $element.data('hot').loadData(data);
+            } else {
+              $element.data('hot').render();
+            }
+          }, 1, data);
+        });
         break;
     }
 
@@ -827,6 +864,11 @@ SirTrevorBlock.prototype.buildBlock = function() {
 
         $elementWrapper.append($elementLabel).append($element);
         st.$editor.append($elementWrapper);
+
+        if($element.data('hasCallback')) {
+          $element.data('callback')();
+        }
+
         st.drawnComponents++;
       });
 
@@ -1007,6 +1049,35 @@ SirTrevorBlock.prototype.buildBlock = function() {
           } else {
             data = st.$('input[name="' + i + '"]')[0].checked;
           }
+          break;
+        case 'table':
+          if(container) {
+            if(_.isObject(container)) {
+              data = JSON.parse(st.$(container).find('div[name="' + i + '"]').data('hotData'));
+            } else {
+              data = JSON.parse(st.$(container + ' div[name="' + i + '"]').data('hotData'));
+            }
+          } else {
+            data = JSON.parse(st.$('div[name="' + i + '"]').data('hotData'));
+          }
+
+          // Clear out rows that are entirely null values
+          var newData = [];
+
+          $.each(data, function(i, d) {
+
+            var isNull = true;
+            $.each(d, function(j, v) {
+              if(v !== null) {
+                isNull = false;
+              }
+            });
+
+            if(!isNull) {
+              newData.push(data[i]);
+            }
+          });
+          data = newData;
           break;
         default:
           if(container) {
