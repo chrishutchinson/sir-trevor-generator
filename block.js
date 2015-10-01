@@ -422,7 +422,10 @@ var SirTrevorBlock = function(title, type) {
         var $element = $('<input>', {
           type: 'checkbox',
           name: name,
-          checked: (value ? value : component.default),
+          /** If the checkbox has never been set before then the value field will be the empty string, in which case we
+          use the default value. This could in theory be any string, so we'll decide that 'false' is false and anything
+          else is true. If the checkbox has previously been set, its value will be a boolean so we can safely use that. **/
+          checked: (value === '') ? ((component.default === 'false') ? false : true) : value,
           class: component.class
         });
 
