@@ -43,7 +43,6 @@ var SirTrevorBlock = function(title, type) {
   this.uploadTarget = false;
   this.hasPastable = false;
   this.hasUploadable = false;
-  this.hasRepeatable = false;
 
   /**
    * Creates an element using jQuery
@@ -591,16 +590,10 @@ SirTrevorBlock.prototype.setPastableComponent = function(name, component, callba
 };
 
 SirTrevorBlock.prototype.setRepeaterComponent = function(name, children) {
-  if(!this.hasRepeatable) {
-    this.hasRepeatable = true;
-
-    this.components[name] = {
-      type: 'repeater',
-      components: children
-    };
-  } else {
-    console.error('Sir Trevor Block Generator: Each block can only have one repeatable element at present, ' + name + ' has not been configured.');
-  }
+  this.components[name] = {
+    type: 'repeater',
+    components: children
+  };
 
   return this;
 };
