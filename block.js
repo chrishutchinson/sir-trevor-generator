@@ -775,29 +775,33 @@ SirTrevorBlock.prototype.buildBlock = function() {
     addComponents: function(data, components) {
       var st = this;
 
-      $.each(components, function(i, e) {
-        var $elementWrapper = $('<div>', {
-          class: 'st-element',
-          style: 'margin-bottom: 10px;',
-          'data-name': i
+      if(Object.keys(components).length > 0) {
+        $.each(components, function(i, e) {
+          var $elementWrapper = $('<div>', {
+            class: 'st-element',
+            style: 'margin-bottom: 10px;',
+            'data-name': i
+          });
+
+          var $elementLabel = $('<label>').html(e.label);
+          var $element = that.createElement(i, e, data[i], st);
+
+          if(e.type !== 'repeater') {
+            $elementWrapper.append($elementLabel)
+          }
+
+          $elementWrapper.append($element);
+          st.$editor.append($elementWrapper);
+
+          if($element.data('hasCallback')) {
+            $element.data('callback')();
+          }
+
+          st.drawnComponents++;
         });
-
-        var $elementLabel = $('<label>').html(e.label);
-        var $element = that.createElement(i, e, data[i], st);
-
-        if(e.type !== 'repeater') {
-          $elementWrapper.append($elementLabel)
-        }
-
-        $elementWrapper.append($element);
-        st.$editor.append($elementWrapper);
-
-        if($element.data('hasCallback')) {
-          $element.data('callback')();
-        }
-
-        st.drawnComponents++;
-      });
+      } else {
+        st.$editor.append($('<p><em>This block has no configurable elements</em></p>'));
+      }
 
       st.$editor.show();
 
