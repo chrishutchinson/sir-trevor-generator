@@ -265,10 +265,7 @@ var SirTrevorBlock = function(title, type) {
         // Set some defaults
         var that = this;
         var children = component.components;
-        this.$repeatable = $('<div>', {
-          class: 'st-repeater'
-        });
-        var $child = '';
+        var $elementWrapper = $('<div>');
 
         var $repeatButton = $('<button>', {
           class: 'st-upload-btn st-button st-button--add repeat-button',
@@ -295,7 +292,9 @@ var SirTrevorBlock = function(title, type) {
           $(st.$editor.find('button.repeat-button')).last().show();
         });
 
-        var createRepeatingElement = function() {
+        var createRepeatingElement = function(value) {
+          value = value || null;
+
           var $el = $('<div>', {
             class: 'st-repeater'
           });
@@ -313,7 +312,8 @@ var SirTrevorBlock = function(title, type) {
           // Iterate through the fields
           $.each(children, function(n, c) {
             var $childLabel = $('<label>').html(c.label);
-            $child = that.createElement(n, c, null, st, name);
+            var childValue = (value ? value[n] : null);
+            $child = that.createElement(n, c, childValue, st, name);
             $child.css({
               marginBottom: '10px'
             });
@@ -331,90 +331,15 @@ var SirTrevorBlock = function(title, type) {
           return $el;
         };
 
-        this.$repeatable = createRepeatingElement();
-
-        // Add the buttons
-        this.$repeatable;
-
-        // Check if we have data
         if(value) {
-          $element = $('<div>');
-          $.each(value, function(key, data) {
-            var $part = createRepeatingElement();
-            $.each(data, function(prop, val) {
-              var $partElem = $part.find('[name="' + prop + '"]');
-              if($partElem.attr('type') === 'file') {
-                // Hide the file uploader, and prevent it being included in data scapes for this card
-                $partElem.attr('type', 'hidden').val(val);
-
-                // Setup the template and HTML for the file preview
-                var $filePreview = $('<div>');
-                
-                // Handle images
-                if (/image/.test(val)) {
-                  var typeData = 'image';
-                }
-
-                // Handle audio
-                if (/audio/.test(val)) {
-                  var typeData = 'audio';
-                }
-
-                // Handle video
-                if (/video/.test(val)) {
-                  var typeData = 'video';
-                }
-
-                switch(typeData) {
-                  case 'image':
-                  default:
-                    var $filePreviewElem = $('<img>', { 
-                      src: val, 
-                      class: 'st-image-preview'
-                    });
-                    break;
-                  case 'audio':
-                    var $filePreviewElem = $('<audio>', { 
-                      src: val, 
-                      controls: 'controls',
-                      preload: 'auto',
-                    });
-                    break;
-                  case 'video':
-                    var $filePreviewElem = $('<video>', { 
-                      src: val, 
-                      controls: 'controls',
-                    });
-                    break;
-                }
-                var $filePreviewRemove = $('<a>', { 
-                  class: 'st-upload-btn st-button st-button--small st-button--table st-button--remove remove-button',
-                }).html('Remove').on('click', function(e) {
-                  // On click of the remove button, show the uploader and remove the preview
-                  e.preventDefault();
-                  $partElem.attr('type', 'file').val('');
-                  $filePreview.remove();
-                });
-                $filePreview.append($filePreviewElem).append($filePreviewRemove);
-                $partElem.after($filePreview);
-              } else if ($partElem.attr('type') === 'checkbox') {
-                $partElem.prop('checked', val);
-              } else if ($partElem.attr('type') === 'table') {
-                $partElem.data('callback')(val);
-              } else {
-                $partElem.val(val).html(val);
-              }
-
-              if($partElem.data('hasCallback')) {
-                $partElem.data('callback')();
-              }
-            });
-            $element.append($part);
-          });
+          $.each(value, function(e, value) {
+            $elementWrapper.append(createRepeatingElement( value ));
+          }.bind(this));
         } else {
-          // Return the element
-          $element = this.$repeatable;
+          $elementWrapper.append(createRepeatingElement());
         }
+
+        $element = $elementWrapper;
         break;
       case 'checkbox':
         var $element = $('<input>', {
