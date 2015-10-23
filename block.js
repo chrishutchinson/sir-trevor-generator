@@ -258,9 +258,8 @@ var SirTrevorBlock = function(title, type) {
         }
 
         // Set the default value if supplied
-        if(component.default) {
-          $element.val(component.default);
-        }
+        var componentValue = (value ? value : component.default);
+        $element.val(componentValue);
         break;
       case 'repeater':
         // Set some defaults
