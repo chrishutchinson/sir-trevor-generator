@@ -266,14 +266,15 @@ var SirTrevorBlock = function(title, type) {
         var that = this;
         var children = component.components;
         var $elementWrapper = $('<div>');
+        var repeaterLabel = component.label || 'Item';
 
         var $repeatButton = $('<button>', {
           class: 'st-upload-btn st-button st-button--add repeat-button',
-        }).html('Add item');
+        }).html('Add ' + repeaterLabel);
 
         var $removeButton = $('<button>', {
           class: 'st-upload-btn st-button st-button--danger remove-button'
-        }).html('Remove item');
+        }).html('Remove ' + repeaterLabel);
 
         // Build the 'Add' button
         $repeatButton.on('click', function(e) {
@@ -306,7 +307,7 @@ var SirTrevorBlock = function(title, type) {
           var $childWrapperTitle = $('<h3>').css({
             marginTop: '10px',
             marginBottom: '5px'
-          }).html('Item #');
+          }).html(repeaterLabel + ' #');
           $childWrapper.append($childWrapperTitle);
 
           // Iterate through the fields
@@ -513,10 +514,11 @@ SirTrevorBlock.prototype.setPastableComponent = function(name, component, callba
   return this;
 };
 
-SirTrevorBlock.prototype.setRepeaterComponent = function(name, children) {
+SirTrevorBlock.prototype.setRepeaterComponent = function(name, children, label) {
   this.components[name] = {
     type: 'repeater',
-    components: children
+    components: children,
+    label: label
   };
 
   return this;
@@ -779,10 +781,15 @@ SirTrevorBlock.prototype.buildBlock = function() {
           style: 'margin-bottom: 10px;',
           'data-name': i
         });
+
         var $elementLabel = $('<label>').html(e.label);
         var $element = that.createElement(i, e, data[i], st);
 
-        $elementWrapper.append($elementLabel).append($element);
+        if(e.type !== 'repeater') {
+          $elementWrapper.append($elementLabel)
+        }
+
+        $elementWrapper.append($element);
         st.$editor.append($elementWrapper);
 
         if($element.data('hasCallback')) {
