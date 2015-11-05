@@ -12,6 +12,12 @@ Install via Bower by running:
 
 Include `block.js` into your project to be able to create blocks using this library.
 
+Install via `npm` by running:
+    
+    npm install sir-trevor-generator --save
+
+This library supports the require syntax in CommonJS: `var SirTrevorBlock = require('sir-trevor-generator');`
+
 ### Currently supported fields
 
 - Text
