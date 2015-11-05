@@ -1,0 +1,28 @@
+{
+  "name": "sir-trevor-generator",
+  "version": "0.0.1",
+  "description": "A Sir Trevor JS block builder",
+  "main": "block.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrishutchinson/sir-trevor-generator.git"
+  },
+  "keywords": [
+    "sir",
+    "trevor",
+    "js",
+    "generator"
+  ],
+  "author": "Chris Hutchinson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrishutchinson/sir-trevor-generator/issues"
+  },
+  "homepage": "https://github.com/chrishutchinson/sir-trevor-generator"
+}
