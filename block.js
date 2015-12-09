@@ -183,6 +183,19 @@
             $element.addClass('st-required');
           }
 
+          component.textMode = component.textMode || 'block';
+          switch(component.textMode) {
+            case 'inline':
+              this.defaults.scribeOptions.tags.br = true;
+              this.defaults.scribeOptions.allowBlockElements = false;
+              break;
+            case 'block':
+            default:
+              this.defaults.scribeOptions.tags.br = false;
+              this.defaults.scribeOptions.allowBlockElements = true;
+              break;
+          }
+
           var editor = st.newTextEditor($element[0].outerHTML, componentValue);
           $element = $(editor.node);
           break;
@@ -680,7 +693,6 @@
           script: false,
           ul: true,
           li: true,
-          br: false,
           p: {
             style: false
           }
@@ -1036,9 +1048,8 @@
     return this;
   };
 
-  var ScribeGeneratorBlockPlugin = function(block) {
+  var ScribeGeneratorBlockPlugin = function(block) { 
     return function(scribe) {
-
     };
   };
 
