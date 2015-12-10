@@ -1,6 +1,6 @@
 {
   "name": "sir-trevor-generator",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Sir Trevor JS block builder",
   "main": "block.js",
   "directories": {

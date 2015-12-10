@@ -1,8 +1,9 @@
 # Sir Trevor JS block generator
 
-## Build by Chris Hutchinson, 2015
+## Built by Chris Hutchinson, 2015
 
-An early, *early* pass at building a simple Sir Trevor JS block builder
+A simple programmatic block builder for [Sir Trevor JS](http://www.github.com/madebymany/sir-trevor-js).
+
 
 ## Installation
 
@@ -18,12 +19,18 @@ Install via `npm` by running:
 
 This library supports the require syntax in CommonJS: `var SirTrevorBlock = require('sir-trevor-generator');`
 
+
 ### Currently supported fields
 
 - Text
 - Textarea
 - Number 
-- Files (uploadable)
+- Files
+- Select
+- Tables (uses [Handsontable](http://handsontable.com/))
+- Checkboxes
+- Repeaters
+
 
 ### Callbacks
 
@@ -34,6 +41,30 @@ Most fields also support custom callbacks such as the following:
 
 You can define your own callback functions to allow these fields to interact with Sir Trevor JS.
 
-### Example
+**Callbacks are experimental at the moment, and haven't been tested thoroughly**
 
-See `someblock.js` and `oembed.js` as examples, although, they've not been thoroughly tested at present.
+
+### Examples
+
+See the `/examples` folder for a range of example blocks.
+
+
+### Version History
+
+**0.0.4**
+
+- Fixes an issue loading in empty Handlebars data
+- Updates to README.md
+
+**0.0.3**
+
+- Adds support for non block level elements in textareas (uses `<br />` tags instead of `<p>` tags)
+
+**0.0.2**
+
+- Improvements to media and rich text fields
+- Many enhancements I've since forgotten, check the GitHub commit logs
+
+**0.0.1**
+
+- Initial release
