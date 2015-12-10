@@ -386,7 +386,7 @@
             afterChange: function(change, source) {
               $element.data('hotData', JSON.stringify(this.getData()));
             },
-            data: (value ? value : component.default)
+            data: (value && value.length > 0 ? value : component.default)
           }));
 
           $element.data('hot', hot);
