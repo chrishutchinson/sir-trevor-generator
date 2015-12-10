@@ -51,12 +51,16 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
-**0.0.4**
+**0.0.5 (10 December, 2015)**
+
+- Adds support for richer callbacks, making that functionality more powerful
+
+**0.0.4 (10 December, 2015)**
 
 - Fixes an issue loading in empty Handlebars data
 - Updates to README.md
 
-**0.0.3**
+**0.0.3 (09 December, 2015)**
 
 - Adds support for non block level elements in textareas (uses `<br />` tags instead of `<p>` tags)
 
