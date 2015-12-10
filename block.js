@@ -406,9 +406,10 @@
       }
 
       if(!_.isUndefined(component.callbacks)) {
+        var parent = this;
         $.each(component.callbacks, function(eventName, callback) {
           $element.on(eventName, function(e) {
-            callback(e, SirTrevor.getInstance());
+            callback(e, SirTrevor.getInstance(), parent);
           });
         });
       }
@@ -839,6 +840,8 @@
         if(this.drawnComponents === 0){
           this.loadData();
         }
+
+        that.blockElement = this;
       },
 
       // Handles pasted content
@@ -1048,7 +1051,7 @@
     return this;
   };
 
-  var ScribeGeneratorBlockPlugin = function(block) { 
+  var ScribeGeneratorBlockPlugin = function(block) {
     return function(scribe) {
     };
   };
