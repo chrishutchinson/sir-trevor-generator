@@ -406,10 +406,9 @@
       }
 
       if(!_.isUndefined(component.callbacks)) {
-        var parent = this;
         $.each(component.callbacks, function(eventName, callback) {
           $element.on(eventName, function(e) {
-            callback(e, SirTrevor.getInstance(), parent);
+            callback(e, SirTrevor.getInstance());
           });
         });
       }
@@ -840,8 +839,6 @@
         if(this.drawnComponents === 0){
           this.loadData();
         }
-
-        that.blockElement = this;
       },
 
       // Handles pasted content
@@ -953,8 +950,16 @@
             } else {
               data = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
             }
-            if (data.length > 0) {
-              data = SirTrevor.toHTML(data, e.type);
+
+            if(e.textMode === 'inline') {
+              var splitData = data.replace(/<p>/g, '').replace(/<\/p>/g, '<br />').split('<br />');
+              
+              if(splitData.length > 1) {
+                splitData.pop();
+                data = splitData.join('<br />');
+              } else {
+                data = splitData[0];
+              }
             }
             break;
           case 'select':
@@ -1051,7 +1056,7 @@
     return this;
   };
 
-  var ScribeGeneratorBlockPlugin = function(block) {
+  var ScribeGeneratorBlockPlugin = function(block) { 
     return function(scribe) {
     };
   };

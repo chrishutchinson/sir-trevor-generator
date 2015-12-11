@@ -51,6 +51,11 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**0.0.6 (11 December, 2015)**
+
+- Fixes issue with Markdown formatting in rich text areas
+- Fixes issue with stray <p> tags in inline rich text areas
+
 **0.0.5 (10 December, 2015)**
 
 - Adds support for richer callbacks, making that functionality more powerful
