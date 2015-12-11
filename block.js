@@ -186,17 +186,23 @@
           component.textMode = component.textMode || 'block';
           switch(component.textMode) {
             case 'inline':
+              this.defaults.scribeOptions.tags.p = false;
               this.defaults.scribeOptions.tags.br = true;
               this.defaults.scribeOptions.allowBlockElements = false;
               break;
             case 'block':
             default:
+              this.defaults.scribeOptions.tags.p = {
+                style: false
+              };
               this.defaults.scribeOptions.tags.br = false;
               this.defaults.scribeOptions.allowBlockElements = true;
               break;
           }
 
-          var editor = st.newTextEditor($element[0].outerHTML, componentValue);
+          var editor = st.newTextEditor($element[0].outerHTML);
+          editor.scribe.setHTML('');
+          editor.scribe.setHTML(componentValue);
           $element = $(editor.node);
           break;
         case 'select':
@@ -949,17 +955,6 @@
               }
             } else {
               data = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
-            }
-
-            if(e.textMode === 'inline') {
-              var splitData = data.replace(/<p>/g, '').replace(/<\/p>/g, '<br />').split('<br />');
-              
-              if(splitData.length > 1) {
-                splitData.pop();
-                data = splitData.join('<br />');
-              } else {
-                data = splitData[0];
-              }
             }
             break;
           case 'select':

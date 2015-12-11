@@ -51,6 +51,10 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**0.0.7 (11 December, 2015)**
+
+- Fixes an issue with <br> tags in inline rich text areas
+
 **0.0.6 (11 December, 2015)**
 
 - Fixes issue with Markdown formatting in rich text areas
