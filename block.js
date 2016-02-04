@@ -285,6 +285,10 @@
           // Set the default value if supplied
           var componentValue = (value ? value : component.default);
           $element.val(componentValue);
+
+          if(component.required) {
+            $element.addClass('st-required');
+          }
           break;
         case 'repeater':
           // Set some defaults
