@@ -51,6 +51,14 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**0.0.9 (18 February, 2015)**
+
+- Adds a required asterisk after labels on required fields
+
+**0.0.8 (4 February, 2016)**
+
+- Change support for required property and nullable property on select components
+
 **0.0.7 (11 December, 2015)**
 
 - Fixes an issue with <br> tags in inline rich text areas
