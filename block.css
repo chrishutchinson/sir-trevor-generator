@@ -77,6 +77,11 @@
 	counter-reset: st-repeater-count;
 }
 
+.st-generated-block .st-element.st-element--required label:after {
+	content: ' *';
+	color: #E94B35;
+}
+
 .st-generated-block .st-element .st-repeater .st-repeater-child h3:after {
 	counter-increment: st-repeater-count;
 	content: counter(st-repeater-count);

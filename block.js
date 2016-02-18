@@ -811,6 +811,10 @@
               'data-name': i
             });
 
+            if(e.required) {
+              $elementWrapper.addClass('st-element--required');
+            }
+
             var $elementLabel = $('<label>').html(e.label);
             var $element = that.createElement(i, e, data[i], st);
 
