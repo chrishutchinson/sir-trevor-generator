@@ -87,6 +87,11 @@
 	content: counter(st-repeater-count);
 }
 
+.st-generated-block .st-element .st-repeater .st-repeater-child .st-element-child.st-element-child--required label:after {
+	content: ' *';
+	color: #E94B35;
+}
+
 .st-generated-block .st-element .st-repeater:first-of-type .st-button.st-button--danger {
 	display: none;
 }

@@ -347,7 +347,16 @@
               $child.css({
                 marginBottom: '10px'
               });
-              $childWrapper.append($childLabel).append($child);
+
+              var $elementWrapper = $('<div>', {
+                class: 'st-element-child'
+              });
+
+              if(c.required) {
+                $elementWrapper.addClass('st-element-child--required');
+              }
+              $elementWrapper.append($childLabel).append($child);
+              $childWrapper.append($elementWrapper);
               $el.append($childWrapper);
 
               if($child.data('hasCallback')) {

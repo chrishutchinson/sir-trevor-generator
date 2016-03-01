@@ -51,6 +51,10 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**0.0.10 (1 March, 2015)**
+
+- Ensures required asterisks show on repeater fields
+
 **0.0.9 (18 February, 2015)**
 
 - Adds a required asterisk after labels on required fields
