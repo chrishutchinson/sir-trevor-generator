@@ -51,6 +51,10 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**1.0.2 (21 April, 2016)**
+
+- Add support for a new `.hideIcon()` method to hide the icon in the edit toolbar
+
 **1.0.1 (21 April, 2016)**
 
 - Fixes an issue with rich textarea fields, where sometimes `&nbsp;` characters were appearing in the output instead of spaces
