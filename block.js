@@ -510,6 +510,17 @@
   };
 
   /**
+   * Hides the icon
+   * @memberof SirTrevorBlock
+   * @function
+   * @returns {object} this       - The instance on which this method was called.
+   */
+  SirTrevorBlock.prototype.hideIcon = function() {
+    this.hidden = true;
+    return this;
+  };
+
+  /**
    * Sets the title
    * @memberof SirTrevorBlock
    * @function
@@ -740,8 +751,11 @@
       };
     }
 
+
     // Block data
     this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
+
+      toolbarEnabled: (!this.hidden ? true : false),
 
       // Sets the initial HTML
       editorHTML: '<div><h2>' + this.title + '</h2><hr /></div>',
