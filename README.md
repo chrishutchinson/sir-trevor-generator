@@ -51,11 +51,17 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
-**0.0.10 (1 March, 2015)**
+**1.0.0 (21 April, 2016)**
+
+- Adds support for searchable selects via the Select2 Library
+- I decided to bump the version to 1.0.0 as it's had a bunch of features added over the past few months, and 1.0.0 sounds better
+- _Be glad I didn't do a Facebook and make it version 11.0.0_
+
+**0.0.10 (1 March, 2016)**
 
 - Ensures required asterisks show on repeater fields
 
-**0.0.9 (18 February, 2015)**
+**0.0.9 (18 February, 2016)**
 
 - Adds a required asterisk after labels on required fields
 
