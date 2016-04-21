@@ -1006,6 +1006,8 @@
             } else {
               data = st.$editor.find('div[contenteditable][name="' + i + '"]')[0].innerHTML;
             }
+
+            data = data.replace(/(\s|&nbsp;)+/g, ' ');
             break;
           case 'select':
             if(container) {
