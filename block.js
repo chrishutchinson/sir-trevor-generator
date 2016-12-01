@@ -204,6 +204,7 @@
           editor.scribe.setHTML('');
           editor.scribe.setHTML(componentValue);
           $element = $(editor.node);
+          $element.editor = editor;
           break;
         case 'select':
           var $element = $('<select>', {
@@ -427,7 +428,7 @@
       if(!_.isUndefined(component.callbacks)) {
         $.each(component.callbacks, function(eventName, callback) {
           $element.on(eventName, function(e) {
-            callback(e, SirTrevor.getInstance());
+            callback(e, SirTrevor.getInstance(), $element);
           });
         });
       }

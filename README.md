@@ -1,6 +1,6 @@
 # Sir Trevor JS block generator
 
-## Built by Chris Hutchinson, 2015
+## Built by Chris Hutchinson, 2016
 
 A simple programmatic block builder for [Sir Trevor JS](http://www.github.com/madebymany/sir-trevor-js).
 
@@ -50,6 +50,11 @@ See the `/examples` folder for a range of example blocks.
 
 
 ### Version History
+
+**1.0.3 (1 December, 2016)**
+
+- Pass the element object through to each callback object
+- Add the editor object to the element
 
 **1.0.2 (21 April, 2016)**
 
