@@ -290,6 +290,10 @@
           if(component.required) {
             $element.addClass('st-required');
           }
+
+          if(component.searchable) {
+            $element.addClass('st-searchable');
+          }
           break;
         case 'repeater':
           // Set some defaults
@@ -850,38 +854,6 @@
             $elementWrapper.append($element);
             st.$editor.append($elementWrapper);
 
-            // If it's a select
-            if(e.type === 'select') {
-
-              // If our element is searchable
-              if(e.searchable) {
-                // Setup the select2 object
-                select2 = $element.select2();
-
-                // Is it required? We have to dynamically control the `st-required` class if so, because Sir Trevor....
-                if(e.required) {
-                  // Add the class, ensure it's there
-                  select2.addClass('st-required');
-
-                  // Do we have a value? Probably pre-loaded? If so, remove the required class
-                  if(select2.val() !== '') {
-                    select2.removeClass('st-required');
-                  }
-
-                  // On change of the select
-                  select2.on('change', function (e) {
-                    // Got a value? remove the required class
-                    if(select2.val() !== '') {
-                      select2.removeClass('st-required');
-                    } else {
-                      // No value, add the required class
-                      select2.addClass('st-required');
-                    }
-                  });
-                }
-              }
-            }
-
             if($element.data('hasCallback')) {
               $element.data('callback')();
             }
@@ -891,6 +863,28 @@
         } else {
           st.$editor.append($('<p><em>This block has no configurable elements</em></p>'));
         }
+
+        st.$editor.find('.st-searchable').each(function(index, el) {
+          var $searchableEl = $(el);
+          var select2 = $searchableEl.select2();
+          if($searchableEl.hasClass('st-required')) {
+            // Do we have a value? Probably pre-loaded? If so, remove the required class
+            if(select2.val() !== '') {
+              select2.removeClass('st-required');
+            }
+
+            // On change of the select
+            select2.on('change', function (e) {
+              // Got a value? remove the required class
+              if(select2.val() !== '') {
+                select2.removeClass('st-required');
+              } else {
+                // No value, add the required class
+                select2.addClass('st-required');
+              }
+            });
+          }
+        });
 
         st.$editor.show();
 
