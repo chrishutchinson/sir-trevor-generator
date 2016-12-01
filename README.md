@@ -51,6 +51,10 @@ See the `/examples` folder for a range of example blocks.
 
 ### Version History
 
+**1.0.4 (1 December, 2016)**
+
+- Ensure searchable <select>s work in repeaters
+
 **1.0.3 (1 December, 2016)**
 
 - Pass the element object through to each callback object
