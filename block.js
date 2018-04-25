@@ -759,7 +759,6 @@
 
     // Block data
     this.block = SirTrevor.Block.extend(_.extend(this.defaults, {
-
       toolbarEnabled: (!this.hidden ? true : false),
 
       // Sets the initial HTML
@@ -782,6 +781,10 @@
         });
 
         this.addComponents(data, that.components);
+
+        if(this.properties.nonDeletable) {
+          this.$('.st-block-ui-btn--delete').remove();
+        }
       },
 
       updateFileData: function(data, target) {
@@ -1112,7 +1115,7 @@
     return this;
   };
 
-  var ScribeGeneratorBlockPlugin = function(block) { 
+  var ScribeGeneratorBlockPlugin = function(block) {
     return function(scribe) {
     };
   };
